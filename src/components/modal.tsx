@@ -6,7 +6,7 @@ import { ICreateQuestionOrAnswer, IQuestionDTO, IInternalAnswerDTO } from "./typ
 interface IModalWrapeprProps {
     open: boolean,
     handleClose: () => void,
-    handleSave?: (value: string) => void,
+    handleSave?: (value: ICreateQuestionOrAnswer) => void,
     
     // create
     handleCreate?: (value: ICreateQuestionOrAnswer) => void
@@ -58,7 +58,7 @@ export const Modal = ({
     const [titleAddState, setTitleAddState] = useState(componentType === 'answer' ? '' : question?.name);
     const [descriptionAddState, setDescriptionAddState] = useState('');
 
-    const [titleEditState, setTitleEditState] = useState(componentType === 'answer' ? question?.name : '');
+    const [titleEditState, setTitleEditState] = useState(componentType === 'answer' ? question?.descr : question?.name);
     const [descriptionEditState, setDescriptionEditState] = useState(componentType === 'answer' ? answer?.name : question?.descr);
 
     const clearState = () => {
@@ -152,7 +152,8 @@ export const Modal = ({
                     />
                     <Button
                         onClick={() => {
-                            handleSave?.(descriptionEditState || '')
+                            handleSave?.({ title: titleEditState || '', description: descriptionEditState || '' })
+                            // handleSave?.(descriptionEditState || '')
                             handleClose();
                             // clearState(); - todo - ?????????
                         }}

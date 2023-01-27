@@ -1,15 +1,24 @@
 import { ICreateQuestionOrAnswer, IInternalAnswerDTO, IQuestionDTO } from "../types"
 import { IOption, ActionType, ComponentType } from "./menuOptions"
-import React,  { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { IconButton, Menu, MenuItem } from "@mui/material";
+// import { styled } from "@mui/material/styles";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Modal } from "../modal";
+
+
+// const IconButtonStyled = styled(IconButton)(() => ({
+//     padding: 0,
+//     "&:focus": {
+//         outline: 'none',
+//     }
+// }));
 
 interface ILongMenu {
     options: IOption[],
     open: boolean,
     anchorEl: null | HTMLElement
-    handleClick: (event: React.MouseEvent<HTMLElement>) => void
+    handleClick?: (event: React.MouseEvent<HTMLElement>) => void
     handleClose: () => void
 
     handleAdd?: () => void
@@ -17,13 +26,13 @@ interface ILongMenu {
 
     // create
     handleCreateQuestion?: (value: ICreateQuestionOrAnswer) => void
-    handleCreateAnswer?: (value: ICreateQuestionOrAnswer) => void
+    createAnswer?: (value: ICreateQuestionOrAnswer) => void
 
     // edit
     question?: IQuestionDTO,
     answer?: IInternalAnswerDTO,
-    handleEditQuestion?: (value: string) => void,
-    handleEditAnswer?: (value: string) => void,
+    editQuestion?: (value: ICreateQuestionOrAnswer) => void,
+    handleEditAnswer?: (value: ICreateQuestionOrAnswer) => void,
 
     // delete
     deleteQuestion?: () => void,
@@ -45,12 +54,12 @@ export const PopupMenu = ({
 
     // create
     handleCreateQuestion,
-    handleCreateAnswer,
+    createAnswer,
 
     // edit
     question,
     answer,
-    handleEditQuestion,
+    editQuestion,
     handleEditAnswer,
 
     // delete - ok?
@@ -64,9 +73,17 @@ export const PopupMenu = ({
     const [openModal, setOpenModal] = useState(false);
     const activeTypeRef = useRef<ActionType>()
 
+    const buttonStyle = {
+        padding: 0,
+        "&:focus": {
+            outline: 'none',
+        }
+    };
+
     return (
-        <div>
+        <>
             <IconButton
+                sx={buttonStyle}
                 aria-label="more"
                 id="long-button"
                 aria-controls={open ? 'long-menu' : undefined}
@@ -94,7 +111,7 @@ export const PopupMenu = ({
                 {options.map((option) => (
                     option.type !== 'empty' && <MenuItem key={option.type}
                         onClick={() => {
-                            activeTypeRef.current = option.type
+                            activeTypeRef.current = option.type;
                             setOpenModal(true);
                         }}>
                         {option.value}
@@ -103,9 +120,12 @@ export const PopupMenu = ({
             </Menu>
             <Modal
                 open={openModal}
-                handleClose={() => setOpenModal(false)}
-                handleCreate={handleCreateQuestion ?? handleCreateAnswer}
-                handleSave={handleEditQuestion ?? handleEditAnswer}
+                handleClose={() => {
+                    setOpenModal(false)
+                    handleClose();
+                }}
+                handleCreate={handleCreateQuestion ?? createAnswer}
+                handleSave={editQuestion ?? handleEditAnswer}
                 handleDelete={deleteAnswer ?? deleteQuestion}
                 actionType={activeTypeRef.current}
 
@@ -113,6 +133,6 @@ export const PopupMenu = ({
                 answer={answer}
                 componentType={componentType}
             />
-        </div>
+        </>
     );
 }

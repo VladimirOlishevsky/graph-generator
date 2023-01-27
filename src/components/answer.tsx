@@ -5,7 +5,41 @@ import { getFlatQuestionsAndAnswers } from '../utils/getFlatQuestionsAndAnswers'
 import { IOption, optionsAnswer } from './popupMenu/menuOptions';
 import { PopupMenu } from './popupMenu/popupMenu';
 import { IAnswerDTO, ICreateQuestionOrAnswer, IInternalAnswerDTO, IQuestionDTO } from "./types";
+import { styled } from "@mui/material/styles";
+import { Card } from '@mui/material';
 
+const prefix = 'Answer';
+
+const classes = {
+    rootContent: `${prefix}-rootContent`,
+    header: `${prefix}-header`,
+    content: `${prefix}-content`,
+};
+
+const Root = styled(Card)(() => ({
+    display: 'inline-block',
+    padding: 12,
+    borderRadius: 12,
+
+    [`& .${classes.rootContent}`]: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+    },
+
+    [`& .${classes.header}`]: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    [`& .${classes.content}`]: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        alignItems: 'baseline',
+        maxWidth: 300
+    },
+}));
 
 export interface IAnswerProps {
     questions: IQuestionDTO[],
@@ -113,8 +147,8 @@ export const Answer = ({
     };
 
     // edit
-    const handleEditAnswer = (value: string) => {
-        questionAnswerVariant ? questionAnswerVariant.name = value : null
+    const handleEditAnswer = (value: ICreateQuestionOrAnswer) => {
+        questionAnswerVariant ? questionAnswerVariant.name = value.description : null
         handleClose()
     };
 
@@ -126,9 +160,10 @@ export const Answer = ({
     const isNoQuestion = !answerVariant.question_next;
 
     const adaptOptions = [!rootQuestionAfterAnswer ? { type: 'add', value: 'Добавить вопрос' } : { type: 'empty', value: '' }, ...optionsAnswer]
-    return <div>
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center' }}>
-            <div style={{ fontWeight: 700 }}>ответ</div>
+
+    return (
+        <div style={{ display: 'inline-block', gap: 10, justifyContent: 'center', alignItems: 'center', border: '1px solid #ccc', borderRadius: 8, padding: 8 }}>
+            {/* <div style={{ fontWeight: 700 }}>ответ</div> */}
             <div>{answerVariant.name}</div>
 
             <PopupMenu
@@ -150,9 +185,10 @@ export const Answer = ({
                 componentType='answer'
             />
         </div>
+    )
+}
 
-
-        {/* <button onClick={() => {
+{/* <button onClick={() => {
             const questionCode = `${Math.random()}`;
             const question: IQuestionDTO = {
                 code: questionCode,
@@ -217,11 +253,7 @@ export const Answer = ({
         }}>удалить</button> */}
 
 
-        {/* <button onClick={() => {
+{/* <button onClick={() => {
             const res = feelTreeAnswers({ questions, answers, answer: questionAnswer, answerVariant })
             console.log('answer treeeeeee', res && getFlatQuestionsAndAnswers([res]))
         }}>get Answer Tree</button> */}
-
-
-    </div>
-}

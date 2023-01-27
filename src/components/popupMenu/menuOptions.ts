@@ -10,8 +10,7 @@ export const optionsAnswer: IOption[] = [
     { type: 'delete', value: 'Удалить' }
 ];
 
-export const optionsQuestion = [
-    // 'Добавить ответ',
-    'Редактировать',
-    'Удалить',
+export const optionsQuestion: IOption[] = [
+    { type: 'add', value: 'Добавить ответ' },
+    { type: 'edit', value: 'Редактировать' },
 ];

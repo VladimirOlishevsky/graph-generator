@@ -84,9 +84,7 @@ export const Demo = () => {
     const constQuestionsLinks: string[] = mockAnswers.reduce((accumulator: string[], currentValue) => accumulator.concat(currentValue.answer.map(x => x.question_next)), []);
     const rootQuestion = mockQuestions.filter(f => !constQuestionsLinks.find(x => f.code == x))[0];
 
-    return <div>
-        <SchemaTree questions={mockQuestions} answers={mockAnswers} rootQuestion={rootQuestion} />
-    </div>;
+    return <SchemaTree questions={mockQuestions} answers={mockAnswers} rootQuestion={rootQuestion} />;
 }
 
 // interface IModalWrapeprProps {
