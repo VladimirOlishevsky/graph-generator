@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useMemo } from 'react'
 import { deleteTreeNodes } from "../utils/deleteTreeNodes";
 import { getTransformedRootQuestions } from "../utils/questionUtils";
-import { IOption, optionsQuestion } from './popupMenu/menuOptions';
+import { ActionType, IOption, optionsQuestion } from './popupMenu/menuOptions';
 import { PopupMenu } from "./popupMenu/popupMenu";
 import { IQuestionDTO, IAnswerDTO, ICreateQuestionOrAnswer } from "./types";
 import { styled } from "@mui/material/styles";
 import { Card, Typography } from '@mui/material';
+import { Modal } from './modal';
 
 const prefix = 'Question';
 
@@ -29,14 +30,16 @@ const Root = styled(Card)(() => ({
     [`& .${classes.header}`]: {
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        gap: 12
     },
     [`& .${classes.content}`]: {
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
         alignItems: 'baseline',
-        maxWidth: 300
+        maxWidth: 300,
+        textAlign: 'left'
     },
 }));
 
@@ -47,6 +50,8 @@ export interface IQuestionProps {
     questions: IQuestionDTO[],
     answers: IAnswerDTO[],
     isRootQuestion?: boolean
+
+    handleChangeCollapse?: () => void
 }
 
 export const Question = ({
@@ -55,33 +60,49 @@ export const Question = ({
     rerenderSheema,
     questions,
     answers,
-    isRootQuestion
+    isRootQuestion,
+
+    handleChangeCollapse
 }: IQuestionProps) => {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    const adaptQuestion = useMemo(() => question, [question.name, question.descr]) // - todo check
+
+    const [openModal, setOpenModal] = useState(false);
+    const activeTypeRef = useRef<ActionType>();
+
+    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleClose = () => {
+    const handleCloseMenu = () => {
         setAnchorEl(null);
     };
 
     const createAnswer = (value: ICreateQuestionOrAnswer) => {
+        // const createAnswer = () => {
+        // questionAnswer.answer.push({
+        //     // name: `Ответ ${Math.random()}`,
+        //     name: value.description,
+        //     question_next: ''
+        // })
+        // handleClose();
+        // rerenderSheema?.();
         questionAnswer.answer.push({
             // name: `Ответ ${Math.random()}`,
             name: value.description,
             question_next: ''
         })
-        handleClose();
+        handleCloseMenu();
         rerenderSheema?.();
     }
 
     const editQuestion = (value: ICreateQuestionOrAnswer) => {
         question.name = value.title;
         question.descr = value.description;
-        handleClose();
+        handleCloseMenu();
+        rerenderSheema?.();
     }
 
     const deleteQuestion = () => {
@@ -91,35 +112,50 @@ export const Question = ({
             commonQuestions: questions,
             commonAnswers: answers
         })
-        handleClose();
+        handleCloseMenu();
         rerenderSheema?.();
     }
 
-    const adaptOptions = !isRootQuestion ? [...optionsQuestion, { type: 'delete', value: 'Удалить' }] : optionsQuestion
+    const adaptOptions = !isRootQuestion ? [...optionsQuestion, { type: 'delete', value: 'Удалить' }] : optionsQuestion;
+
 
     return <Root variant="outlined">
         <div className={classes.rootContent}>
             <div className={classes.header}>
                 <Typography fontWeight='700'>вопрос</Typography>
                 <PopupMenu
-                    anchorEl={anchorEl}
-                    handleClick={handleClick}
-                    handleClose={handleClose}
-                    open={open}
                     options={adaptOptions as IOption[]}
-                    question={question}
-                    createAnswer={createAnswer}
-                    editQuestion={editQuestion}
-                    deleteQuestion={deleteQuestion}
-                    componentType='question'
+                    open={open}
+                    anchorEl={anchorEl}
+                    handleOpenMenu={handleOpenMenu}
+                    handleCloseMenu={handleCloseMenu}
+
+                    activeTypeRef={activeTypeRef}
+                    setOpenModal={setOpenModal}
                 />
             </div>
             <div className={classes.content}>
-                <Typography align='left'>{question.name}</Typography>
-                <Typography align='left'>{question.descr}</Typography>
+                <Typography>{question.name}</Typography>
+                <Typography>{question.descr}</Typography>
             </div>
+            <button onClick={handleChangeCollapse}>collapse</button>
         </div>
+        <Modal
+            key={question.name} // todo - check
+            open={openModal}
+            handleClose={() => {
+                setOpenModal(false)
+                handleCloseMenu();
+            }}
 
+            handleCreate={createAnswer}
+            handleEdit={editQuestion}
+            handleDelete={deleteQuestion}
+            actionType={activeTypeRef.current}
+
+            question={question}
+            componentType={'question'}
+        />
 
     </Root>
 }

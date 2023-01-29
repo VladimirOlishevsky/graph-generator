@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { feelTreeAnswers } from '../utils/answerUtils';
 import { deleteTreeNodes } from '../utils/deleteTreeNodes';
 import { getFlatQuestionsAndAnswers } from '../utils/getFlatQuestionsAndAnswers';
-import { IOption, optionsAnswer } from './popupMenu/menuOptions';
+import { ActionType, IOption, optionsAnswer } from './popupMenu/menuOptions';
 import { PopupMenu } from './popupMenu/popupMenu';
 import { IAnswerDTO, ICreateQuestionOrAnswer, IInternalAnswerDTO, IQuestionDTO } from "./types";
 import { styled } from "@mui/material/styles";
 import { Card } from '@mui/material';
+import { Modal } from './modal';
 
 const prefix = 'Answer';
 
@@ -23,7 +24,6 @@ const Root = styled(Card)(() => ({
 
     [`& .${classes.rootContent}`]: {
         display: 'flex',
-        flexDirection: 'column',
         gap: 12,
     },
 
@@ -48,7 +48,9 @@ export interface IAnswerProps {
     rerenderSheema?: () => void,
     questionAnswer: IAnswerDTO,
     index: number
-    questionBefore: IQuestionDTO
+    questionBefore: IQuestionDTO,
+
+    handleChangeCollapse?: () => void 
 }
 
 export const Answer = ({
@@ -58,11 +60,15 @@ export const Answer = ({
     answers,
     questionAnswer,
     index,
-    questionBefore
+    questionBefore,
+
+    handleChangeCollapse
 }: IAnswerProps) => {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+    const activeTypeRef = useRef<ActionType>();
+    const [openModal, setOpenModal] = useState(false);
 
     const questionAnswerVariant = questionAnswer.answer.find(el => el.name === answerVariant.name);
     const rootQuestionAfterAnswer = questionAnswerVariant && feelTreeAnswers({
@@ -106,9 +112,7 @@ export const Answer = ({
         rerenderSheema?.();
     }
 
-    const addClick = (value: ICreateQuestionOrAnswer) => {
-
-        console.log('value', value)
+    const addQuestion = (value: ICreateQuestionOrAnswer) => {
         const questionCode = `${Math.random()}`;
         const question: IQuestionDTO = {
             code: questionCode,
@@ -134,57 +138,70 @@ export const Answer = ({
         rerenderSheema?.();
     }
 
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleClose = () => {
+    const handleCloseMenu = () => {
         setAnchorEl(null);
     };
 
     const handleAdd = (value: ICreateQuestionOrAnswer) => {
-        addClick(value);
-        handleClose()
+        addQuestion(value);
+        handleCloseMenu()
     };
 
     // edit
     const handleEditAnswer = (value: ICreateQuestionOrAnswer) => {
         questionAnswerVariant ? questionAnswerVariant.name = value.description : null
-        handleClose()
+        handleCloseMenu()
     };
 
     //delete
     const handleDeleteAnswer = () => {
         deleteClick();
-        handleClose()
+        handleCloseMenu()
     };
     const isNoQuestion = !answerVariant.question_next;
 
     const adaptOptions = [!rootQuestionAfterAnswer ? { type: 'add', value: 'Добавить вопрос' } : { type: 'empty', value: '' }, ...optionsAnswer]
 
+    
     return (
-        <div style={{ display: 'inline-block', gap: 10, justifyContent: 'center', alignItems: 'center', border: '1px solid #ccc', borderRadius: 8, padding: 8 }}>
-            {/* <div style={{ fontWeight: 700 }}>ответ</div> */}
-            <div>{answerVariant.name}</div>
+        <Root variant="outlined">
+            <div className={classes.rootContent}>
+                <div>{answerVariant.name}</div>
 
-            <PopupMenu
-                anchorEl={anchorEl}
-                handleClick={handleClick}
-                handleClose={handleClose}
-                open={open}
-                options={adaptOptions as IOption[]}
+                <button onClick={handleChangeCollapse}>collapse</button>
 
-                question={questionBefore}
-                answer={questionAnswerVariant}
-                // handleAdd={handleAdd}
+                <PopupMenu
+                    anchorEl={anchorEl}
+                    handleOpenMenu={handleOpenMenu}
+                    handleCloseMenu={handleCloseMenu}
+                    open={open}
+                    options={adaptOptions as IOption[]}
 
-                handleCreateQuestion={handleAdd}
+                    activeTypeRef={activeTypeRef}
+                    setOpenModal={setOpenModal}
+                />
+                <Modal
+                    key={questionBefore.name + questionBefore.descr} // todo - check
+                    open={openModal}
+                    handleClose={() => {
+                        setOpenModal(false)
+                        handleCloseMenu();
+                    }}
 
-                handleEditAnswer={handleEditAnswer}
-                deleteAnswer={handleDeleteAnswer}
+                    handleCreate={handleAdd}
+                    handleEdit={handleEditAnswer}
+                    handleDelete={handleDeleteAnswer}
+                    actionType={activeTypeRef.current}
 
-                componentType='answer'
-            />
-        </div>
+                    question={questionBefore}
+                    answer={questionAnswerVariant}
+                    componentType={'answer'}
+                />
+            </div>
+        </Root>
     )
 }
 

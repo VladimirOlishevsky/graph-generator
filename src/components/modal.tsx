@@ -1,12 +1,11 @@
 import { Box, Typography, Button, TextField, Modal as ModalComponent, Fade } from "@mui/material";
-import { useState } from "react";
+import React,{ useState } from "react";
 import { ActionType, ComponentType } from "./popupMenu/menuOptions";
 import { ICreateQuestionOrAnswer, IQuestionDTO, IInternalAnswerDTO } from "./types";
 
 interface IModalWrapeprProps {
     open: boolean,
     handleClose: () => void,
-    handleSave?: (value: ICreateQuestionOrAnswer) => void,
     
     // create
     handleCreate?: (value: ICreateQuestionOrAnswer) => void
@@ -14,7 +13,8 @@ interface IModalWrapeprProps {
     //edit
     question?: IQuestionDTO,
     answer?: IInternalAnswerDTO,
-    
+    handleEdit?: (value: ICreateQuestionOrAnswer) => void,
+
     //delete
     handleDelete?: () => void,
     actionType?: ActionType,
@@ -30,7 +30,7 @@ export const Modal = ({
     handleCreate,
 
     //edit
-    handleSave,
+    handleEdit,
     question,
     answer,
 
@@ -52,28 +52,33 @@ export const Modal = ({
         p: 4,
     };
 
-    const conditionWord = question ? 'вопроса' : 'ответа';
-    console.log(actionType)
+    const conditioAddWord = question ? 'ответа' : 'вопроса';
+    const conditionEditWord = question ? 'вопроса' : 'ответа';
 
-    const [titleAddState, setTitleAddState] = useState(componentType === 'answer' ? '' : question?.name);
-    const [descriptionAddState, setDescriptionAddState] = useState('');
 
-    const [titleEditState, setTitleEditState] = useState(componentType === 'answer' ? question?.descr : question?.name);
-    const [descriptionEditState, setDescriptionEditState] = useState(componentType === 'answer' ? answer?.name : question?.descr);
+    const cond = actionType === 'add' 
 
-    const clearState = () => {
-       setTitleAddState('')
-       setDescriptionAddState('')
-    //    setTitleEditState('')
-    //    setDescriptionEditState('')
-    }
+    console.log('question', question)
+    console.log('componentType', componentType)
+
+    const [addState, setAddState] = useState({
+        title: componentType === 'question' ? question?.name : '',
+        description: ""
+    });
+
+    const [editState, setEditState] = useState({
+        title: componentType === 'answer' ? question?.descr : question?.name,
+        description: componentType === 'answer' ? answer?.name : question?.descr
+    });
+
+    const clearAddState = () => setAddState({ ...addState, description: '' })
 
     const deleteComponent = () => {
         return (
             <Box sx={style}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                    <Typography>Вы действительно хотите удалить?</Typography>
-                    <div style={{ display: 'flex', gap: 10 }}>
+                    <Typography>{`Вы действительно хотите удалить?`}</Typography>
+                    <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
                         <Button onClick={handleDelete} variant="outlined">Да</Button>
                         <Button onClick={handleClose} variant="outlined">Нет</Button>
                     </div>
@@ -84,44 +89,47 @@ export const Modal = ({
 
     const add = () => {
         return (
-            <Box
-                component="form"
-                sx={style}
-                noValidate
-                autoComplete="off"
-            >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                    <Typography>{`Добавление ${conditionWord}`}</Typography>
-                    <TextField
-                        onChange={(e) => setTitleAddState(e.target.value)}
-                        label={`Название ${conditionWord}`}
-                        variant="outlined"
-                        value={titleAddState}
-                    />
-                    <TextField
-                        onChange={(e) => setDescriptionAddState(e.target.value)}
-                        label={`Текст ${conditionWord}`}
-                        variant="outlined"
-                        multiline={true}
-                        rows={5}
-                        value={descriptionAddState}
-                    />
-                    <Button
-                        onClick={() => {
-                            handleCreate?.({ title: titleAddState || '', description: descriptionAddState || '' })
-                            handleClose();
-                            clearState();
-                        }}
-                        variant="outlined"
-                    >Добавить</Button>
-                    <Button
-                        onClick={handleClose}
-                        variant="outlined"
-                    >Отмена</Button>
-                </div>
-            </Box>
-        )
-    }
+        <Box
+            component="form"
+            sx={style}
+            noValidate
+            autoComplete="off"
+        >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                <Typography>{`Добавление ${conditioAddWord}`}</Typography>
+                <TextField
+                    disabled={componentType === 'question'}
+                    onChange={(e) => setAddState({ ...addState, title: e.target.value })}
+                    label={`Название ${conditioAddWord}`}
+                    variant="outlined"
+                    value={addState.title || ''}
+                />
+                <TextField
+                    onChange={(e) => setAddState({ ...addState, description: e.target.value })}
+                    label={`Текст ${conditionEditWord}`}
+                    variant="outlined"
+                    multiline={true}
+                    rows={5}
+                    value={addState.description || ''}
+                />
+                <Button
+                    onClick={() => {
+                        handleCreate?.({ title: addState.title || '', description: addState.description })
+                        handleClose();
+                        clearAddState()
+                    }}
+                    variant="outlined"
+                >Добавить</Button>
+                <Button
+                    onClick={() => {
+                        handleClose();
+                        // clearState()
+                    }}
+                    variant="outlined"
+                >Отмена</Button>
+            </div>
+        </Box>
+    )}
 
     const edit = () => {
         return (
@@ -132,30 +140,28 @@ export const Modal = ({
                 autoComplete="off"
             >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                    <Typography>{`Добавление (редактирование) ${conditionWord}`}</Typography>
+                    <Typography>{`Редактирование ${conditionEditWord}`}</Typography>
                     <TextField
-                        onChange={(e) => setTitleEditState(e.target.value)}
+                        onChange={(e) => setEditState({ ...editState, title: e.target.value })}
                         disabled={componentType === 'answer'}
-                        label={`Название ${conditionWord}`}
+                        label={`Название ${conditionEditWord}`}
                         variant="outlined"
-                        value={titleEditState}
+                        value={editState.title}
                         required
                     />
                     <TextField
-                        onChange={(e) => setDescriptionEditState(e.target.value)}
-                        label={`Текст ${conditionWord}`}
+                        onChange={(e) => setEditState({ ...editState, description: e.target.value })}
+                        label={`Текст ${conditionEditWord}`}
                         variant="outlined"
                         multiline={true}
                         rows={5}
-                        value={descriptionEditState}
+                        value={editState.description}
                         required
                     />
                     <Button
                         onClick={() => {
-                            handleSave?.({ title: titleEditState || '', description: descriptionEditState || '' })
-                            // handleSave?.(descriptionEditState || '')
+                            handleEdit?.({ title: editState.title || '', description: editState.description || '' })
                             handleClose();
-                            // clearState(); - todo - ?????????
                         }}
                         variant="outlined"
                     >Сохранить</Button>
@@ -183,8 +189,8 @@ export const Modal = ({
 
     return (
         <ModalComponent
-            aria-labelledby="transition-modal-title"
-            aria-describedby="transition-modal-description"
+            // aria-labelledby="transition-modal-title"
+            // aria-describedby="transition-modal-description"
             open={open}
             onClose={handleClose}
             closeAfterTransition
