@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react'
+import React, { useState, useRef, useMemo, useContext, useEffect } from 'react'
 import { deleteTreeNodes } from "../utils/deleteTreeNodes";
 import { getTransformedRootQuestions } from "../utils/questionUtils";
 import { ActionType, IOption, optionsQuestion } from './popupMenu/menuOptions';
@@ -68,8 +68,6 @@ export const Question = ({
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
 
-    const adaptQuestion = useMemo(() => question, [question.name, question.descr]) // - todo check
-
     const [openModal, setOpenModal] = useState(false);
     const activeTypeRef = useRef<ActionType>();
 
@@ -81,16 +79,7 @@ export const Question = ({
     };
 
     const createAnswer = (value: ICreateQuestionOrAnswer) => {
-        // const createAnswer = () => {
-        // questionAnswer.answer.push({
-        //     // name: `Ответ ${Math.random()}`,
-        //     name: value.description,
-        //     question_next: ''
-        // })
-        // handleClose();
-        // rerenderSheema?.();
         questionAnswer.answer.push({
-            // name: `Ответ ${Math.random()}`,
             name: value.description,
             question_next: ''
         })
@@ -101,6 +90,7 @@ export const Question = ({
     const editQuestion = (value: ICreateQuestionOrAnswer) => {
         question.name = value.title;
         question.descr = value.description;
+        question.fields_shows = value.fieldsShowsIds || []; // todo check
         handleCloseMenu();
         rerenderSheema?.();
     }
@@ -117,7 +107,6 @@ export const Question = ({
     }
 
     const adaptOptions = !isRootQuestion ? [...optionsQuestion, { type: 'delete', value: 'Удалить' }] : optionsQuestion;
-
 
     return <Root variant="outlined">
         <div className={classes.rootContent}>
@@ -141,7 +130,7 @@ export const Question = ({
             <button onClick={handleChangeCollapse}>collapse</button>
         </div>
         <Modal
-            key={question.name} // todo - check
+            key={question.name + question.descr}
             open={openModal}
             handleClose={() => {
                 setOpenModal(false)
@@ -156,7 +145,6 @@ export const Question = ({
             question={question}
             componentType={'question'}
         />
-
     </Root>
 }
 

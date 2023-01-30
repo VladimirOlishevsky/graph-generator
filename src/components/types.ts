@@ -33,5 +33,11 @@ export interface IQuestion extends IQuestionDTO {
 // todo change name
 export interface ICreateQuestionOrAnswer { 
     title: string, 
-    description: string 
+    description: string,
+    fieldsShowsIds?: string[] 
 }
+
+export interface IFieldsShowsResponseItem {
+    code: string;
+    name: string;
+  }

@@ -1,7 +1,6 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import { feelTreeAnswers } from '../utils/answerUtils';
 import { deleteTreeNodes } from '../utils/deleteTreeNodes';
-import { getFlatQuestionsAndAnswers } from '../utils/getFlatQuestionsAndAnswers';
 import { ActionType, IOption, optionsAnswer } from './popupMenu/menuOptions';
 import { PopupMenu } from './popupMenu/popupMenu';
 import { IAnswerDTO, ICreateQuestionOrAnswer, IInternalAnswerDTO, IQuestionDTO } from "./types";
@@ -50,19 +49,19 @@ export interface IAnswerProps {
     index: number
     questionBefore: IQuestionDTO,
 
-    handleChangeCollapse?: () => void 
+    // handleChangeCollapse?: () => void 
 }
 
 export const Answer = ({
     questions,
+    answers,
     rerenderSheema,
     answerVariant,
-    answers,
     questionAnswer,
     index,
     questionBefore,
 
-    handleChangeCollapse
+    // handleChangeCollapse
 }: IAnswerProps) => {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -71,14 +70,12 @@ export const Answer = ({
     const [openModal, setOpenModal] = useState(false);
 
     const questionAnswerVariant = questionAnswer.answer.find(el => el.name === answerVariant.name);
-    const rootQuestionAfterAnswer = questionAnswerVariant && feelTreeAnswers({
+    const rootQuestionAfterAnswer = questionAnswerVariant?.question_next && feelTreeAnswers({
         questions,
         answers,
         answer: questionAnswer,
         answerVariant: questionAnswerVariant
     });
-
-    console.log('questionAnswer', questionAnswer)
 
     const deleteClick = () => {
         if (questionAnswerVariant) {
@@ -88,26 +85,6 @@ export const Answer = ({
                 commonAnswers: answers,
             })
             questionAnswer.answer.splice(index, 1);
-
-            // if (!questionAnswerVariant?.question_next) {
-            //     const index = questionAnswer.answer.indexOf(questionAnswerVariant)
-            //     questionAnswer.answer.splice(index, 1);
-            // } else {
-            //     const answerRootQuestion = feelTreeAnswers(questions, answers, questionAnswer, questionAnswerVariant);
-
-            //     const index = questionAnswer.answer.indexOf(questionAnswerVariant)
-            //     questionAnswer.answer.splice(index, 1);
-
-            //     // console.log('answerRootQuestion', answerRootQuestion)
-            //     // answerRootQuestion && deleteTreeNodes({
-            //     //     questions: answerRootQuestion ? [answerRootQuestion] : [],
-            //     //     commonQuestions: questions,
-            //     //     commonAnswers: answers,
-            //     // })
-
-            //     //0.3423241901637042
-            //     //0.50684821753806
-            // }
         }
         rerenderSheema?.();
     }
@@ -116,19 +93,16 @@ export const Answer = ({
         const questionCode = `${Math.random()}`;
         const question: IQuestionDTO = {
             code: questionCode,
-            name: `${value.title}`,
-            descr: `${value.description}`,
-            // descr: `Описание вопроса ${questionCode}`,
-            // name: `Название вопроса ${questionCode}`,
-            fields_shows: []
+            name: value.title,
+            descr: value.description,
+            fields_shows: value.fieldsShowsIds || []
         }
         questions.push(question);
 
         const answerCode = `${Math.random()}`;
         const answer: IAnswerDTO = {
             answer: [],
-            name: `${value.title}`,
-            // name: `Описание вопроса ${answerCode}`,
+            name: value.title,
             code: answerCode,
             question: questionCode
         }
@@ -161,18 +135,13 @@ export const Answer = ({
         deleteClick();
         handleCloseMenu()
     };
-    const isNoQuestion = !answerVariant.question_next;
-
+    // const isNoQuestion = !answerVariant.question_next;
     const adaptOptions = [!rootQuestionAfterAnswer ? { type: 'add', value: 'Добавить вопрос' } : { type: 'empty', value: '' }, ...optionsAnswer]
 
-    
     return (
         <Root variant="outlined">
             <div className={classes.rootContent}>
                 <div>{answerVariant.name}</div>
-
-                <button onClick={handleChangeCollapse}>collapse</button>
-
                 <PopupMenu
                     anchorEl={anchorEl}
                     handleOpenMenu={handleOpenMenu}
@@ -184,7 +153,7 @@ export const Answer = ({
                     setOpenModal={setOpenModal}
                 />
                 <Modal
-                    key={questionBefore.name + questionBefore.descr} // todo - check
+                    key={questionBefore.name + questionBefore.descr}
                     open={openModal}
                     handleClose={() => {
                         setOpenModal(false)
@@ -204,73 +173,3 @@ export const Answer = ({
         </Root>
     )
 }
-
-{/* <button onClick={() => {
-            const questionCode = `${Math.random()}`;
-            const question: IQuestionDTO = {
-                code: questionCode,
-                descr: `Описание вопроса ${questionCode}`,
-                name: `Название вопроса ${questionCode}`,
-                fields_shows: []
-            }
-            questions.push(question);
-
-            const answerCode = `${Math.random()}`;
-            const answer: IAnswerDTO = {
-                answer: [],
-                name: `Описание вопроса ${answerCode}`,
-                code: answerCode,
-                question: questionCode
-            }
-            answers.push(answer);
-
-            answerVariant.question_next = questionCode;
-            rerenderSheema?.();
-        }}>{isNoQuestion ? 'добавить' : 'изменить'} вопрос</button>
-
-
-        <button onClick={() => {
-
-            const questionAnswerVariant = questionAnswer.answer.find(el => el.name === answerVariant.name);
-
-            if (questionAnswerVariant) {
-                const answerRootQuestion = feelTreeAnswers(questions, answers, questionAnswer, questionAnswerVariant);
-                answerRootQuestion && deleteTreeNodes({
-                    questions: [answerRootQuestion],
-                    commonQuestions: questions,
-                    commonAnswers: answers,
-                })
-
-                const index = questionAnswer.answer.indexOf(questionAnswerVariant)
-                questionAnswer.answer.splice(index, 1);
-
-                
-
-                // if (!questionAnswerVariant?.question_next) {
-                //     const index = questionAnswer.answer.indexOf(questionAnswerVariant)
-                //     questionAnswer.answer.splice(index, 1);
-                // } else {
-                //     const answerRootQuestion = feelTreeAnswers(questions, answers, questionAnswer, questionAnswerVariant);
-
-                //     const index = questionAnswer.answer.indexOf(questionAnswerVariant)
-                //     questionAnswer.answer.splice(index, 1);
-
-                //     // console.log('answerRootQuestion', answerRootQuestion)
-                //     // answerRootQuestion && deleteTreeNodes({
-                //     //     questions: answerRootQuestion ? [answerRootQuestion] : [],
-                //     //     commonQuestions: questions,
-                //     //     commonAnswers: answers,
-                //     // })
-
-                //     //0.3423241901637042
-                //     //0.50684821753806
-                // }
-            }
-            rerenderSheema?.();
-        }}>удалить</button> */}
-
-
-{/* <button onClick={() => {
-            const res = feelTreeAnswers({ questions, answers, answer: questionAnswer, answerVariant })
-            console.log('answer treeeeeee', res && getFlatQuestionsAndAnswers([res]))
-        }}>get Answer Tree</button> */}

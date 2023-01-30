@@ -22,7 +22,7 @@ export const PopupMenu = ({
     handleCloseMenu,
 
     activeTypeRef,
-    setOpenModal
+    setOpenModal,
 }: IPopupMenu) => {
 
     const buttonStyle = {

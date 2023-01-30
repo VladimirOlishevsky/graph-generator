@@ -1,12 +1,18 @@
-import { Box, Typography, Button, TextField, Modal as ModalComponent, Fade } from "@mui/material";
-import React,{ useState } from "react";
+import { Box, Typography, Button, TextField, Modal as ModalComponent, Fade, Chip } from "@mui/material";
+import React, { useState, useContext } from "react";
 import { ActionType, ComponentType } from "./popupMenu/menuOptions";
-import { ICreateQuestionOrAnswer, IQuestionDTO, IInternalAnswerDTO } from "./types";
+import { ICreateQuestionOrAnswer, IQuestionDTO, IInternalAnswerDTO, IFieldsShowsResponseItem } from "./types";
+import Checkbox from "@mui/material/Checkbox/Checkbox";
+import Autocomplete from '@mui/material/Autocomplete';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import { context } from "./context/context";
 
-interface IModalWrapeprProps {
+
+export interface IModalWrapeprProps {
     open: boolean,
     handleClose: () => void,
-    
+
     // create
     handleCreate?: (value: ICreateQuestionOrAnswer) => void
 
@@ -52,14 +58,20 @@ export const Modal = ({
         p: 4,
     };
 
+    const { fieldsShows } = useContext(context);
+
+    const getFieldsShowsId = () => {
+        return fieldsShows.filter(el => question?.fields_shows.some(value => value === el.code))
+    }
+
+    const [questionTags, setQuestionTags] = useState<IFieldsShowsResponseItem[]>(getFieldsShowsId());
+    const handleChangeQuestionTags = (e: React.SyntheticEvent<Element, Event>, value: IFieldsShowsResponseItem[]) => {
+        e.preventDefault();
+        setQuestionTags(value);
+    };
+
     const conditioAddWord = question ? 'ответа' : 'вопроса';
     const conditionEditWord = question ? 'вопроса' : 'ответа';
-
-
-    const cond = actionType === 'add' 
-
-    console.log('question', question)
-    console.log('componentType', componentType)
 
     const [addState, setAddState] = useState({
         title: componentType === 'question' ? question?.name : '',
@@ -73,6 +85,7 @@ export const Modal = ({
 
     const clearAddState = () => setAddState({ ...addState, description: '' })
 
+    
     const deleteComponent = () => {
         return (
             <Box sx={style}>
@@ -87,49 +100,83 @@ export const Modal = ({
         )
     }
 
+    const addingTags = questionTags.map(el => el.code)
+
     const add = () => {
         return (
-        <Box
-            component="form"
-            sx={style}
-            noValidate
-            autoComplete="off"
-        >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                <Typography>{`Добавление ${conditioAddWord}`}</Typography>
-                <TextField
-                    disabled={componentType === 'question'}
-                    onChange={(e) => setAddState({ ...addState, title: e.target.value })}
-                    label={`Название ${conditioAddWord}`}
-                    variant="outlined"
-                    value={addState.title || ''}
-                />
-                <TextField
-                    onChange={(e) => setAddState({ ...addState, description: e.target.value })}
-                    label={`Текст ${conditionEditWord}`}
-                    variant="outlined"
-                    multiline={true}
-                    rows={5}
-                    value={addState.description || ''}
-                />
-                <Button
-                    onClick={() => {
-                        handleCreate?.({ title: addState.title || '', description: addState.description })
-                        handleClose();
-                        clearAddState()
-                    }}
-                    variant="outlined"
-                >Добавить</Button>
-                <Button
-                    onClick={() => {
-                        handleClose();
-                        // clearState()
-                    }}
-                    variant="outlined"
-                >Отмена</Button>
-            </div>
-        </Box>
-    )}
+            <Box
+                component="form"
+                sx={style}
+                noValidate
+                autoComplete="off"
+            >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                    <Typography>{`Добавление ${conditioAddWord}`}</Typography>
+                    <TextField
+                        disabled={componentType === 'question'}
+                        onChange={(e) => setAddState({ ...addState, title: e.target.value })}
+                        label={`Название ${conditioAddWord}`}
+                        variant="outlined"
+                        value={addState.title || ''}
+                    />
+                    <TextField
+                        onChange={(e) => setAddState({ ...addState, description: e.target.value })}
+                        label={`Текст ${conditionEditWord}`}
+                        variant="outlined"
+                        multiline={true}
+                        rows={5}
+                        value={addState.description || ''}
+                    />
+                    {componentType === 'answer' && (
+                        <Autocomplete
+                            multiple
+                            id="checkboxes-tags-demo"
+                            options={fieldsShows}
+                            disableCloseOnSelect
+                            getOptionLabel={(option) => option.name}
+                            onChange={handleChangeQuestionTags}
+                            renderOption={(props, option, { selected }) => (
+                                <li key={option.code} {...props}>
+                                    <Checkbox
+                                        icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                                        checkedIcon={<CheckBoxIcon fontSize="small" />}
+                                        style={{ marginRight: 8 }}
+                                        checked={selected}
+                                    />
+                                    {option.name}
+                                </li>
+                            )}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Выберите теги" />
+                            )}
+                        />
+                    )}
+                    <Button
+                        onClick={() => {
+                            handleCreate?.({
+                                title: addState.title || '',
+                                description: addState.description,
+                                fieldsShowsIds: addingTags
+                            })
+                            handleClose();
+                            clearAddState()
+                        }}
+                        variant="outlined"
+                    >
+                        Добавить
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            handleClose();
+                        }}
+                        variant="outlined"
+                    >
+                        Отмена
+                    </Button>
+                </div>
+            </Box>
+        )
+    }
 
     const edit = () => {
         return (
@@ -158,9 +205,38 @@ export const Modal = ({
                         value={editState.description}
                         required
                     />
+                    {componentType === 'question' && (
+                        <Autocomplete
+                            multiple
+                            id="checkboxes-tags-demo"
+                            options={fieldsShows}
+                            value={questionTags}
+                            disableCloseOnSelect
+                            getOptionLabel={(option) => option.name}
+                            onChange={handleChangeQuestionTags}
+                            renderOption={(props, option, { selected }) => (
+                                <li key={option.code} {...props}>
+                                    <Checkbox
+                                        icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
+                                        checkedIcon={<CheckBoxIcon fontSize="small" />}
+                                        style={{ marginRight: 8 }}
+                                        checked={selected}
+                                    />
+                                    {option.name}
+                                </li>
+                            )}
+                            renderInput={(params) => (
+                                <TextField {...params} label="Выберите теги" />
+                            )}
+                        />
+                    )}
                     <Button
                         onClick={() => {
-                            handleEdit?.({ title: editState.title || '', description: editState.description || '' })
+                            handleEdit?.({
+                                title: editState.title || '',
+                                description: editState.description || '',
+                                fieldsShowsIds: questionTags.map(el => el.code)
+                            })
                             handleClose();
                         }}
                         variant="outlined"
@@ -189,8 +265,6 @@ export const Modal = ({
 
     return (
         <ModalComponent
-            // aria-labelledby="transition-modal-title"
-            // aria-describedby="transition-modal-description"
             open={open}
             onClose={handleClose}
             closeAfterTransition
@@ -201,3 +275,47 @@ export const Modal = ({
         </ModalComponent>
     )
 }
+
+{/* <Select<string[]>
+                        labelId="demo-mutiple-chip-checkbox-label"
+                        id="demo-mutiple-chip-checkbox"
+                        multiple
+                        value={questionTags}
+                        onChange={handleChangeQuestionTags}
+                        IconComponent={KeyboardArrowDownIcon}
+                        renderValue={(selected) => (
+                            <div style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                            }}>
+                                {selected.map((value) => (
+                                    <Chip
+                                        sx={chipStyles}
+                                        key={value}
+                                        label={value}
+                                        clickable
+                                        deleteIcon={
+                                            <CloseIcon
+                                                onMouseDown={(event) => event.stopPropagation()}
+                                            />
+                                        }
+                                        style={{
+                                            margin: 2,
+                                            backgroundColor: "lightGray",
+                                            // color: '#fff'
+                                        }}
+                                        onDelete={(e) => handleDeleteChip(e, value)}
+                                    // onMouseDown={(event) => event.stopPropagation()}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    >
+                        {names.map((name) => (
+                            <MenuItem key={name} value={name} onClick={() => console.log('here')}>
+                                <Checkbox checked={questionTags.includes(name)} />
+                                <ListItemText primary={name} />
+                            </MenuItem>
+                        ))}
+
+                    </Select> */}
