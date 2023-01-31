@@ -32,8 +32,7 @@ export interface IQuestion extends IQuestionDTO {
     answers: IAnswer[]
 }
 
-// todo change name
-export interface ICreateQuestionOrAnswer { 
+export interface ICreateEditQuestionAnswer { 
     title: string, 
     description: string,
     fieldsShowsIds?: string[] 

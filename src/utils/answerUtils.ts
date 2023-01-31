@@ -17,7 +17,7 @@ export const feelTreeAnswers = ({
     const questionAnswers = answer.answer.map(z => ({
         ...z,
         question_next: (() => {
-            const foundQuestion = questions.find(y => y.code == z.question_next);
+            const foundQuestion = questions.find(y => y.code === z.question_next);
             if (!foundQuestion) {
                 return undefined;
             }

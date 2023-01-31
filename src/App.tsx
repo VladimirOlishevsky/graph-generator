@@ -1,7 +1,6 @@
 import reactLogo from './assets/react.svg'
 import './App.css'
-// import { StyledTreeExample } from './components/graph'
-import { Graph } from './components/newComponent'
+import { Graph } from './components/graph'
 
 function App() {
 

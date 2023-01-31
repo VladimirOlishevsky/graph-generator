@@ -1,15 +1,15 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import { deleteTreeNodes } from "../utils/deleteTreeNodes";
 import { getTransformedRootQuestions } from "../utils/questionUtils";
 import { ActionType, IOption, optionsQuestion } from './popupMenu/menuOptions';
 import { PopupMenu } from "./popupMenu/popupMenu";
-import { IQuestionDTO, IAnswerDTO, ICreateQuestionOrAnswer } from "./types";
+import { IQuestionDTO, IAnswerDTO, ICreateEditQuestionAnswer } from "./types";
 import { styled } from "@mui/material/styles";
-import { Card, IconButton, Typography } from '@mui/material';
-// import { Modal } from './modal';
+import { Card, Chip, IconButton, Typography } from '@mui/material';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import clsx from "clsx";
-import { ModalQuestion } from './modalQuestion';
+import { ModalQuestion } from './modals/modalQuestion';
+import { context } from './context/context';
 
 const prefix = 'Question';
 
@@ -85,6 +85,7 @@ export const Question = ({
     answers,
     isRootQuestion,
 }: IQuestionProps) => {
+    const { fieldsShows } = useContext(context);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -99,7 +100,7 @@ export const Question = ({
         setAnchorEl(null);
     };
 
-    const createAnswer = (value: ICreateQuestionOrAnswer) => {
+    const createAnswer = (value: ICreateEditQuestionAnswer) => {
         questionAnswer.answer.push({
             name: value.description,
             question_next: ''
@@ -108,7 +109,7 @@ export const Question = ({
         rerenderSheema?.();
     }
 
-    const editQuestion = (value: ICreateQuestionOrAnswer) => {
+    const editQuestion = (value: ICreateEditQuestionAnswer) => {
         question.name = value.title;
         question.descr = value.description;
         question.fields_shows = value.fieldsShowsIds || []; // todo check
@@ -134,6 +135,10 @@ export const Question = ({
 
     const adaptOptions = !isRootQuestion ? [...optionsQuestion, { type: 'delete', value: 'Удалить' }] : optionsQuestion;
 
+    const getFieldsShowsId = () => {
+        return fieldsShows.filter(el => question?.fields_shows.some(value => value === el.code))
+    }
+
     return <Root variant="outlined">
         <div className={classes.rootContent}>
             <div className={classes.header}>
@@ -152,6 +157,9 @@ export const Question = ({
             <div className={classes.content}>
                 <Typography>{question.name}</Typography>
                 <Typography>{question.descr}</Typography>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {getFieldsShowsId().map(el => <Chip key={el.code} label={el.name} />)}
+                </div>
                 {Boolean(questionAnswer.answer.length) ? (
                     <div className={classes.expandIconWrapper}>
                         <IconButton
@@ -178,20 +186,5 @@ export const Question = ({
 
             question={question}
         />
-        {/* <Modal
-            key={question.name + question.descr}
-            open={openModal}
-            handleClose={() => {
-                setOpenModal(false)
-                handleCloseMenu();
-            }}
-            handleCreate={createAnswer}
-            handleEdit={editQuestion}
-            handleDelete={deleteQuestion}
-            actionType={activeTypeRef.current}
-
-            question={question}
-            componentType={'question'}
-        /> */}
     </Root>
 }

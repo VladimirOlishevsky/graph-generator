@@ -1,41 +1,23 @@
-import { Box, Typography, Button, TextField, Modal as ModalComponent, Fade, Chip } from "@mui/material";
+import { Box, Typography, Button, TextField, Modal as ModalComponent, Fade } from "@mui/material";
 import React, { useState, useContext } from "react";
-import { ActionType } from "./popupMenu/menuOptions";
-import { ICreateQuestionOrAnswer, IQuestionDTO, IInternalAnswerDTO, IFieldsShowsResponseItem } from "./types";
+import { ActionType } from "../popupMenu/menuOptions";
+import { ICreateEditQuestionAnswer, IQuestionDTO, IInternalAnswerDTO, IFieldsShowsResponseItem } from "../types";
 import Checkbox from "@mui/material/Checkbox/Checkbox";
 import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { context } from "./context/context";
-import styled from "@emotion/styled";
-
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    borderRadius: 3,
-    boxShadow: 24,
-    p: 4,
-};
-
-const StyledTextField = styled(TextField)(() => ({
-    "& .MuiFormLabel-asterisk": {
-        color: "red"
-    }
-}));
+import { context } from "../context/context";
+import { modalStyle, StyledTextField } from "./constants";
 
 export interface IModalAnswerProps {
     open: boolean,
     handleClose: () => void,
     // create
-    handleCreate?: (value: ICreateQuestionOrAnswer) => void
+    handleCreate?: (value: ICreateEditQuestionAnswer) => void
     //editComponent
     question?: IQuestionDTO,
     answer?: IInternalAnswerDTO,
-    handleEdit?: (value: ICreateQuestionOrAnswer) => void,
+    handleEdit?: (value: ICreateEditQuestionAnswer) => void,
     //delete
     handleDelete?: () => void,
     actionType?: ActionType,
@@ -78,7 +60,7 @@ export const ModalAnswer = ({
 
     const deleteComponent = () => {
         return (
-            <Box sx={style}>
+            <Box sx={modalStyle}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                     <Typography>{`Вы действительно хотите удалить ответ?`}</Typography>
                     <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
@@ -94,7 +76,7 @@ export const ModalAnswer = ({
         return (
             <Box
                 component="form"
-                sx={style}
+                sx={modalStyle}
                 noValidate
                 autoComplete="off"
             >

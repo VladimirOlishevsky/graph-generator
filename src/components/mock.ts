@@ -263,15 +263,6 @@ export const newMock = {
     ],
     "question": [
         {
-            "code": "testcodescript-asd1243sd-asda1-aghh-1sh",
-            "name": "Обновленное поле",
-            "descr": "Обновил описание и убрал поле UF_CRM_1665138869",
-            "fields_shows": [
-                "43",
-                "48"
-            ]
-        },
-        {
             "code": "testcodescript-4735",
             "name": "Привествие",
             "descr": "Меня зовут… &#40;свое имя&#41;, координатор отдела сервиса. Скажите пожалуйста полное ФИО собственника автомобиля.\n\n",
@@ -311,44 +302,6 @@ export const newMock = {
         }
     ],
     "answer": [
-        {
-            "code": "testcodescript-asd1243sd-asda1-aghh-1sh",
-            "name": "Новое поле",
-            "question": "",
-            "answer": [
-                {
-                    "name": "Ответ",
-                    "question_next": "testcodescript-4898"
-                },
-                {
-                    "name": "Ответ 2",
-                    "question_next": "testcodescript-4892"
-                },
-                {
-                    "name": "Ответ 3",
-                    "question_next": "testcodescript-4892"
-                }
-            ]
-        },
-        {
-            "code": "testcodescript-412a",
-            "name": "новый ответ тест",
-            "question": "testcodescript-413s",
-            "answer": [
-                {
-                    "name": "Ответ",
-                    "question_next": "testcodescript-4898"
-                },
-                {
-                    "name": "Ответ 2",
-                    "question_next": "testcodescript-4892"
-                },
-                {
-                    "name": "Ответ 3",
-                    "question_next": "testcodescript-4892"
-                }
-            ]
-        },
         {
             "code": "testcodescript-4909",
             "name": "Привествие",

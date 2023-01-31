@@ -1,45 +1,26 @@
 import { Box, Typography, Button, TextField, Modal as ModalComponent, Fade, Chip } from "@mui/material";
 import React, { useState, useContext } from "react";
-import { ActionType } from "./popupMenu/menuOptions";
-import { ICreateQuestionOrAnswer, IQuestionDTO, IFieldsShowsResponseItem } from "./types";
 import Checkbox from "@mui/material/Checkbox/Checkbox";
 import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { context } from "./context/context";
-import styled from "@emotion/styled";
-
-const style = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    borderRadius: 3,
-    boxShadow: 24,
-    p: 4,
-};
-
-const StyledTextField = styled(TextField)(() => ({
-    "& .MuiFormLabel-asterisk": {
-        color: "red"
-    }
-}));
+import { context } from "../context/context";
+import { ActionType } from "../popupMenu/menuOptions";
+import { ICreateEditQuestionAnswer, IQuestionDTO, IFieldsShowsResponseItem } from "../types";
+import { modalStyle, StyledTextField } from "./constants";
 
 export interface IModalQuestionProps {
     open: boolean,
     handleClose: () => void,
     // create
-    handleCreate?: (value: ICreateQuestionOrAnswer) => void
+    handleCreate?: (value: ICreateEditQuestionAnswer) => void
     //editComponent
     question?: IQuestionDTO,
-    handleEdit?: (value: ICreateQuestionOrAnswer) => void,
+    handleEdit?: (value: ICreateEditQuestionAnswer) => void,
     //delete
     handleDelete?: () => void,
     actionType?: ActionType,
 }
-
 
 export const ModalQuestion = ({
     open,
@@ -62,11 +43,12 @@ export const ModalQuestion = ({
     })
 
     const { fieldsShows } = useContext(context);
-    const getFieldsShowsId = () => {
+    // todo - add in upper component
+    const getFieldsShows = () => {
         return fieldsShows.filter(el => question?.fields_shows.some(value => value === el.code))
     }
 
-    const [questionTags, setQuestionTags] = useState<IFieldsShowsResponseItem[]>(actionType === 'add' ? [] : getFieldsShowsId());
+    const [questionTags, setQuestionTags] = useState<IFieldsShowsResponseItem[]>(actionType === 'add' ? [] : getFieldsShows());
     const handleChangeQuestionTags = (e: React.SyntheticEvent<Element, Event>, value: IFieldsShowsResponseItem[]) => {
         e.preventDefault();
         setQuestionTags(value);
@@ -75,7 +57,7 @@ export const ModalQuestion = ({
     const deleteComponent = () => {
         return (
             <div>
-                <Box sx={style}>
+                <Box sx={modalStyle}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                         <Typography>{`Вы действительно хотите удалить вопрос?`}</Typography>
                         <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
@@ -93,7 +75,7 @@ export const ModalQuestion = ({
         return (
             <Box
                 component="form"
-                sx={style}
+                sx={modalStyle}
                 noValidate
                 autoComplete="off"
             >

@@ -1,6 +1,5 @@
-import React, { ReactNode, useState } from 'react';
-import { mockAnswers, mockFieldShows, mockQuestions, newMock } from '../mock';
-import { IModalWrapeprProps } from '../modal';
+import React, { ReactNode } from 'react';
+import { newMock } from '../mock';
 import { context } from './context';
 import { IInitialState } from './types';
 
@@ -17,16 +16,11 @@ export const ContextProvider = ({ children }: IProp) => {
   // const answers = mockAnswers;
   // const fieldsShows = mockFieldShows;
 
-  // const [modalState, setModalState] = useState<IModalWrapeprProps>({} as IModalWrapeprProps);
-
 
   const initialState: IInitialState = {
     questions,
     answers,
     fieldsShows,
-
-    // modalState,
-    // setModalState
   };
 
   return (

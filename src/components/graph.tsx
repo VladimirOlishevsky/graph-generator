@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Tree, TreeNode } from "react-organizational-chart";
 import { IAnswerDTO, IQuestionDTO } from "./types";
-import { mockAnswers, mockQuestions } from "./mock";
+import { mockAnswers, mockQuestions, newMock } from "./mock";
 import { Answer } from "./answer";
 import { Question } from "./question";
 import { ContextProvider } from "./context/provider";
@@ -18,6 +18,7 @@ const SchemaTree = (props: { rootQuestion: IQuestionDTO, questions: IQuestionDTO
     }
 
     const tree = getTransformedRootQuestions(questions, answers, [rootQuestion]);
+    console.log('tree', tree)
     const result = getFlatQuestionsAndAnswers(tree);
     return <div>
 
@@ -47,11 +48,15 @@ const getQuestionAnswer = ({
     rerenderSchema,
     isRoot,
 }: IGetQuestionAnswer): React.ReactNode => {
+    console.log('question', question?.code)
+    console.log('answers', answers)
 
     if (!question) return null;
     // todo - check
     let questionAnswer: IAnswerDTO = answers
-        .filter(x => x.question == question.code)[0]
+        .filter(x => x.question === question.code)[0]
+
+    console.log('questionAnswer', questionAnswer)    
 
     // todo - check
     // const questionAnswer: IAnswerDTO = answers
@@ -90,7 +95,7 @@ const getQuestionAnswer = ({
                 getQuestionAnswer({
                     questions,
                     answers,
-                    question: questions.find(x => x.code == f.question_next),
+                    question: questions.find(x => x.code === f.question_next),
                     rerenderSchema
                 })
             )}
@@ -127,15 +132,15 @@ const getQuestionAnswer = ({
 
 export const Graph = () => {
 
-    // const newMockQuest = newMock.question
-    // const newMockAnsw = newMock.answer
+    const newMockQuest = newMock.question
+    const newMockAnsw = newMock.answer
 
-    // const constQuestionsLinks: string[] = newMockAnsw.reduce((accumulator: string[], currentValue) => accumulator.concat(currentValue.answer.map(x => x.question_next)), []);
-    // const rootQuestion = newMockQuest.filter(f => !constQuestionsLinks.find(x => f.code == x))[0];
+    const constQuestionsLinks: string[] = newMockAnsw.reduce((accumulator: string[], currentValue) => accumulator.concat(currentValue.answer.map(x => x.question_next)), []);
+    const rootQuestion = newMockQuest.filter(f => !constQuestionsLinks.find(x => f.code == x))[0];
 
-    // console.log('rootQuestion', rootQuestion)
-    const constQuestionsLinks: string[] = mockAnswers.reduce((accumulator: string[], currentValue) => accumulator.concat(currentValue.answer.map(x => x.question_next)), []);
-    const rootQuestion = mockQuestions.filter(f => !constQuestionsLinks.find(x => f.code == x))[0];
+
+    // const constQuestionsLinks: string[] = mockAnswers.reduce((accumulator: string[], currentValue) => accumulator.concat(currentValue.answer.map(x => x.question_next)), []);
+    // const rootQuestion = mockQuestions.filter(f => !constQuestionsLinks.find(x => f.code == x))[0];
 
     // rootQuestion - вопроса которого нет в question_next
     // return <SchemaTree questions={mockQuestions} answers={mockAnswers} rootQuestion={rootQuestion} />;
@@ -143,7 +148,7 @@ export const Graph = () => {
     
     return (
         <ContextProvider>
-            <SchemaTree questions={mockQuestions} answers={mockAnswers} rootQuestion={rootQuestion} />
+            <SchemaTree questions={newMockQuest} answers={newMockAnsw} rootQuestion={rootQuestion} />
         </ContextProvider>
     );
 }

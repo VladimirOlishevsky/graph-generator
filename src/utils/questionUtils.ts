@@ -2,13 +2,13 @@ import { IAnswer, IAnswerDTO, IQuestion, IQuestionDTO } from "../components/type
 
 export const feelTreeQuestion = (questions: IQuestionDTO[], answers: IAnswerDTO[], question: IQuestionDTO): IQuestion => {
     const questionAnswers: IAnswer[] = answers
-        .filter(x => x.question == question.code)
+        .filter(x => x.question === question.code)
         .map(f => ({
             ...f,
             answer: f.answer.map(z => ({
                 ...z,
                 question_next: (() => {
-                    const foundQuestion = questions.find(y => y.code == z.question_next);
+                    const foundQuestion = questions.find(y => y.code === z.question_next);
                     if (!foundQuestion) {
                         return undefined;
                     }
