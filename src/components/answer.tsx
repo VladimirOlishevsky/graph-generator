@@ -1,12 +1,13 @@
-import React, { useState, useRef, useContext } from 'react'
+import React, { useState, useRef } from 'react'
 import { feelTreeAnswers } from '../utils/answerUtils';
 import { deleteTreeNodes } from '../utils/deleteTreeNodes';
 import { ActionType, IOption, optionsAnswer } from './popupMenu/menuOptions';
 import { PopupMenu } from './popupMenu/popupMenu';
 import { IAnswerDTO, ICreateQuestionOrAnswer, IInternalAnswerDTO, IQuestionDTO } from "./types";
 import { styled } from "@mui/material/styles";
-import { Card } from '@mui/material';
-import { Modal } from './modal';
+import { Card, Typography } from '@mui/material';
+// import { Modal } from './modal';
+import { ModalAnswer } from './modalAnswer';
 
 const prefix = 'Answer';
 
@@ -23,13 +24,15 @@ const Root = styled(Card)(() => ({
 
     [`& .${classes.rootContent}`]: {
         display: 'flex',
+        flexDirection: 'column',
         gap: 12,
     },
 
     [`& .${classes.header}`]: {
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        gap: 12
     },
     [`& .${classes.content}`]: {
         display: 'flex',
@@ -48,8 +51,6 @@ export interface IAnswerProps {
     questionAnswer: IAnswerDTO,
     index: number
     questionBefore: IQuestionDTO,
-
-    // handleChangeCollapse?: () => void 
 }
 
 export const Answer = ({
@@ -60,14 +61,19 @@ export const Answer = ({
     questionAnswer,
     index,
     questionBefore,
-
-    // handleChangeCollapse
 }: IAnswerProps) => {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const activeTypeRef = useRef<ActionType>();
     const [openModal, setOpenModal] = useState(false);
+    
+    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
+    };
 
     const questionAnswerVariant = questionAnswer.answer.find(el => el.name === answerVariant.name);
     const rootQuestionAfterAnswer = questionAnswerVariant?.question_next && feelTreeAnswers({
@@ -90,6 +96,7 @@ export const Answer = ({
     }
 
     const addQuestion = (value: ICreateQuestionOrAnswer) => {
+        console.log('addQuestion', value)
         const questionCode = `${Math.random()}`;
         const question: IQuestionDTO = {
             code: questionCode,
@@ -112,14 +119,7 @@ export const Answer = ({
         rerenderSheema?.();
     }
 
-    const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
-    };
-
-    const handleAdd = (value: ICreateQuestionOrAnswer) => {
+    const handleAddQuestion = (value: ICreateQuestionOrAnswer) => {
         addQuestion(value);
         handleCloseMenu()
     };
@@ -141,7 +141,8 @@ export const Answer = ({
     return (
         <Root variant="outlined">
             <div className={classes.rootContent}>
-                <div>{answerVariant.name}</div>
+            <div className={classes.header}>
+                <Typography fontWeight='700'>ответ</Typography>
                 <PopupMenu
                     anchorEl={anchorEl}
                     handleOpenMenu={handleOpenMenu}
@@ -152,15 +153,32 @@ export const Answer = ({
                     activeTypeRef={activeTypeRef}
                     setOpenModal={setOpenModal}
                 />
-                <Modal
+            </div>
+                <Typography align='left'>{answerVariant.name}</Typography>
+                <ModalAnswer
+                    // key={questionBefore.name + questionBefore.descr}
+                    open={openModal}
+                    handleClose={() => {
+                        setOpenModal(false)
+                        handleCloseMenu();
+                    }}
+                    handleCreate={handleAddQuestion}
+                    handleEdit={handleEditAnswer}
+                    handleDelete={handleDeleteAnswer}
+                    actionType={activeTypeRef.current}
+
+                    question={questionBefore}
+                    answer={questionAnswerVariant}
+                    // componentType={'answer'}
+                />
+                {/* <Modal
                     key={questionBefore.name + questionBefore.descr}
                     open={openModal}
                     handleClose={() => {
                         setOpenModal(false)
                         handleCloseMenu();
                     }}
-
-                    handleCreate={handleAdd}
+                    handleCreate={handleAddQuestion}
                     handleEdit={handleEditAnswer}
                     handleDelete={handleDeleteAnswer}
                     actionType={activeTypeRef.current}
@@ -168,7 +186,7 @@ export const Answer = ({
                     question={questionBefore}
                     answer={questionAnswerVariant}
                     componentType={'answer'}
-                />
+                /> */}
             </div>
         </Root>
     )

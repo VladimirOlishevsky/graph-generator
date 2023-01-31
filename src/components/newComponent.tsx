@@ -1,11 +1,12 @@
-import { FC, useRef, useState, useMemo, useEffect, useContext } from "react";
+import { useState } from "react";
 import { Tree, TreeNode } from "react-organizational-chart";
-import { IAnswer, IAnswerDTO, ICreateQuestionOrAnswer, IInternalAnswerDTO, IQuestion, IQuestionDTO } from "./types";
-import { mockAnswers, mockQuestions, newMock } from "./mock";
+import { IAnswerDTO, IQuestionDTO } from "./types";
+import { mockAnswers, mockQuestions } from "./mock";
 import { Answer } from "./answer";
 import { Question } from "./question";
-import Collapse from "@mui/material/Collapse/Collapse";
 import { ContextProvider } from "./context/provider";
+import { getFlatQuestionsAndAnswers } from "../utils/getFlatQuestionsAndAnswers";
+import { getTransformedRootQuestions } from "../utils/questionUtils";
 
 
 const SchemaTree = (props: { rootQuestion: IQuestionDTO, questions: IQuestionDTO[], answers: IAnswerDTO[] }): JSX.Element => {
@@ -16,7 +17,12 @@ const SchemaTree = (props: { rootQuestion: IQuestionDTO, questions: IQuestionDTO
         setState(`${Math.random()}`);
     }
 
-    return <div>{getQuestionAnswer({
+    const tree = getTransformedRootQuestions(questions, answers, [rootQuestion]);
+    const result = getFlatQuestionsAndAnswers(tree);
+    return <div>
+
+        <button onClick={() => console.log(result)}>Сохранить</button>
+        {getQuestionAnswer({
         questions,
         answers,
         question: rootQuestion,
@@ -48,8 +54,6 @@ const getQuestionAnswer = ({
         .filter(x => x.question == question.code)[0]
 
     // todo - check
-    // [''].includes(question.code)
-
     // const questionAnswer: IAnswerDTO = answers
     //     .filter(x => x.question == question.code)[0]
 
@@ -69,9 +73,8 @@ const getQuestionAnswer = ({
         rerenderSheema={rerenderSchema}
         questions={questions}
         answers={answers}
-        // handleChangeCollapse={handleChangeCollapse}
     />
-    const answerComponent = questionAnswer?.answer.map((f, index) => {
+    const answerComponent = question.isCollapse ? null : questionAnswer?.answer.map((f, index) => {
         return <TreeNode key={index} label={
             <Answer
                 questions={questions}
@@ -99,7 +102,7 @@ const getQuestionAnswer = ({
             lineHeight='20px'
             nodePadding='5px'
             lineWidth={'2px'}
-            lineColor={'green'}
+            lineColor={'black'}
             lineBorderRadius={'10px'}
             label={(
                 <Question
@@ -122,7 +125,7 @@ const getQuestionAnswer = ({
 }
 
 
-export const Demo = () => {
+export const Graph = () => {
 
     // const newMockQuest = newMock.question
     // const newMockAnsw = newMock.answer
@@ -136,6 +139,8 @@ export const Demo = () => {
 
     // rootQuestion - вопроса которого нет в question_next
     // return <SchemaTree questions={mockQuestions} answers={mockAnswers} rootQuestion={rootQuestion} />;
+
+    
     return (
         <ContextProvider>
             <SchemaTree questions={mockQuestions} answers={mockAnswers} rootQuestion={rootQuestion} />

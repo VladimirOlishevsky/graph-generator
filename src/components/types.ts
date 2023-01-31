@@ -3,6 +3,8 @@ export interface IQuestionDTO {
     name: string;
     descr: string;
     fields_shows: string[];
+
+    isCollapse?: boolean 
 }
 
 export interface IInternalAnswerDTO {

@@ -1,12 +1,15 @@
-import React, { useState, useRef, useMemo, useContext, useEffect } from 'react'
+import React, { useState, useRef } from 'react'
 import { deleteTreeNodes } from "../utils/deleteTreeNodes";
 import { getTransformedRootQuestions } from "../utils/questionUtils";
 import { ActionType, IOption, optionsQuestion } from './popupMenu/menuOptions';
 import { PopupMenu } from "./popupMenu/popupMenu";
 import { IQuestionDTO, IAnswerDTO, ICreateQuestionOrAnswer } from "./types";
 import { styled } from "@mui/material/styles";
-import { Card, Typography } from '@mui/material';
-import { Modal } from './modal';
+import { Card, IconButton, Typography } from '@mui/material';
+// import { Modal } from './modal';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import clsx from "clsx";
+import { ModalQuestion } from './modalQuestion';
 
 const prefix = 'Question';
 
@@ -14,6 +17,10 @@ const classes = {
     rootContent: `${prefix}-rootContent`,
     header: `${prefix}-header`,
     content: `${prefix}-content`,
+    expandIconWrapper: `${prefix}-expandIconWrapper`,
+    expand: `${prefix}-expand`,
+    expandOpen: `${prefix}-expandOpen`,
+
 };
 
 const Root = styled(Card)(() => ({
@@ -41,6 +48,24 @@ const Root = styled(Card)(() => ({
         maxWidth: 300,
         textAlign: 'left'
     },
+
+    [`& .${classes.expandIconWrapper}`]: {
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%'
+    },
+
+    [`& .${classes.expand}`]: {
+        transform: "rotate(0deg)",
+        transition: "transform 0.15s ease-in",
+        "&:focus": {
+            outline: 'none',
+        }
+    },
+
+    [`& .${classes.expandOpen}`]: {
+        transform: "rotate(180deg)"
+    },
 }));
 
 export interface IQuestionProps {
@@ -50,8 +75,6 @@ export interface IQuestionProps {
     questions: IQuestionDTO[],
     answers: IAnswerDTO[],
     isRootQuestion?: boolean
-
-    handleChangeCollapse?: () => void
 }
 
 export const Question = ({
@@ -61,8 +84,6 @@ export const Question = ({
     questions,
     answers,
     isRootQuestion,
-
-    handleChangeCollapse
 }: IQuestionProps) => {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -106,6 +127,11 @@ export const Question = ({
         rerenderSheema?.();
     }
 
+    const setIsCollapse = () => {
+        question.isCollapse = !question.isCollapse;
+        rerenderSheema?.();
+    }
+
     const adaptOptions = !isRootQuestion ? [...optionsQuestion, { type: 'delete', value: 'Удалить' }] : optionsQuestion;
 
     return <Root variant="outlined">
@@ -126,17 +152,39 @@ export const Question = ({
             <div className={classes.content}>
                 <Typography>{question.name}</Typography>
                 <Typography>{question.descr}</Typography>
+                {Boolean(questionAnswer.answer.length) ? (
+                    <div className={classes.expandIconWrapper}>
+                        <IconButton
+                            className={clsx(classes.expand, question.isCollapse ? classes.expandOpen : undefined)}
+                            onClick={setIsCollapse}
+                        >
+                            <ExpandMoreIcon />
+                        </IconButton>
+                    </div>
+                ) : null}
             </div>
-            <button onClick={handleChangeCollapse}>collapse</button>
         </div>
-        <Modal
+        <ModalQuestion
             key={question.name + question.descr}
             open={openModal}
             handleClose={() => {
                 setOpenModal(false)
                 handleCloseMenu();
             }}
+            handleCreate={createAnswer}
+            handleEdit={editQuestion}
+            handleDelete={deleteQuestion}
+            actionType={activeTypeRef.current}
 
+            question={question}
+        />
+        {/* <Modal
+            key={question.name + question.descr}
+            open={openModal}
+            handleClose={() => {
+                setOpenModal(false)
+                handleCloseMenu();
+            }}
             handleCreate={createAnswer}
             handleEdit={editQuestion}
             handleDelete={deleteQuestion}
@@ -144,31 +192,6 @@ export const Question = ({
 
             question={question}
             componentType={'question'}
-        />
+        /> */}
     </Root>
 }
-
-
-{/* <button onClick={() => {
-            questionAnswer.answer.push({
-                name: `Ответ ${Math.random()}`,
-                question_next: ''
-            })
-            rerenderSheema?.();
-        }}>добавить ответ</button>
-        {!isRootQuestion && <button onClick={() => {
-            const tree = getTransformedRootQuestions(questions, answers, [question])
-            console.log('tree', tree)
-
-            // const result = getFlatQuestionsAndAnswers(tree);
-            deleteTreeNodes({
-                questions: tree,
-                commonQuestions: questions,
-                commonAnswers: answers
-            })
-            rerenderSheema?.();
-        }}>удалить</button>} */}
-{/* {<button onClick={() => {
-            //    console.log('xxx', getFlatQuestionsAndAnswers(getTransformedRootQuestions(questions, answers, [question])))
-            console.log('xxx', getTransformedRootQuestions(questions, answers, [question]))
-        }}>get question Tree</button>} */}

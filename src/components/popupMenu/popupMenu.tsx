@@ -26,7 +26,6 @@ export const PopupMenu = ({
 }: IPopupMenu) => {
 
     const buttonStyle = {
-        padding: 0,
         "&:focus": {
             outline: 'none',
         }

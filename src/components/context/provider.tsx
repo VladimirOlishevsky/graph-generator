@@ -17,17 +17,16 @@ export const ContextProvider = ({ children }: IProp) => {
   // const answers = mockAnswers;
   // const fieldsShows = mockFieldShows;
 
-  const [modalState, setModalState] = useState<IModalWrapeprProps>({} as IModalWrapeprProps);
+  // const [modalState, setModalState] = useState<IModalWrapeprProps>({} as IModalWrapeprProps);
 
-  console.log('modalState', modalState)
 
   const initialState: IInitialState = {
     questions,
     answers,
     fieldsShows,
 
-    modalState,
-    setModalState
+    // modalState,
+    // setModalState
   };
 
   return (

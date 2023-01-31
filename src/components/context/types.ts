@@ -6,6 +6,6 @@ export interface IInitialState {
   answers: IAnswerDTO[]
   fieldsShows: IFieldsShowsResponseItem[],
 
-  modalState: IModalWrapeprProps,
-  setModalState: React.Dispatch<React.SetStateAction<IModalWrapeprProps>>
+  // modalState: IModalWrapeprProps,
+  // setModalState: React.Dispatch<React.SetStateAction<IModalWrapeprProps>>
 }
