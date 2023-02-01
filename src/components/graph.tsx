@@ -48,19 +48,11 @@ const getQuestionAnswer = ({
     rerenderSchema,
     isRoot,
 }: IGetQuestionAnswer): React.ReactNode => {
-    console.log('question', question?.code)
-    console.log('answers', answers)
 
     if (!question) return null;
-    // todo - check
+
     let questionAnswer: IAnswerDTO = answers
         .filter(x => x.question === question.code)[0]
-
-    console.log('questionAnswer', questionAnswer)    
-
-    // todo - check
-    // const questionAnswer: IAnswerDTO = answers
-    //     .filter(x => x.question == question.code)[0]
 
     if (!questionAnswer) {
         questionAnswer = {
@@ -131,6 +123,12 @@ const getQuestionAnswer = ({
 
 
 export const Graph = () => {
+
+    // const queryString = window.location.search;
+    // console.log('queryString', queryString);
+    // const urlParams = new URLSearchParams(queryString);
+    // console.log('urlParams', urlParams);
+    // console.log('urlParams.getscript', urlParams.get('script'));
 
     const newMockQuest = newMock.question
     const newMockAnsw = newMock.answer
