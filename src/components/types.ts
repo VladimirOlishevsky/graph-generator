@@ -1,10 +1,29 @@
-export interface IQuestionDTO {
+export interface IResponseData {
+    fields: IResponseFields[],
+    question: IResponseQuestion[]
+    answer: IResponseAnswer[]
+}
+
+export interface IResponseFields {
+    code: string;
+    name: string;
+}
+export interface IResponseQuestion {
     code: string;
     name: string;
     descr: string;
     fields_shows: string[];
+}
 
-    isCollapse?: boolean 
+export interface IResponseAnswer {
+    code: string,
+    name: string,
+    question: string,
+    answer: IInternalAnswerDTO[]
+}
+
+export interface IQuestionDTO extends IResponseQuestion {
+    isCollapse?: boolean
 }
 
 export interface IInternalAnswerDTO {
@@ -12,12 +31,7 @@ export interface IInternalAnswerDTO {
     question_next: string;
 }
 
-export interface IAnswerDTO {
-    code: string,
-    name: string,
-    question: string,
-    answer: IInternalAnswerDTO[]
-}
+export interface IAnswerDTO extends IResponseAnswer { }
 
 export interface IInternalAnswer {
     name: string;
@@ -32,13 +46,8 @@ export interface IQuestion extends IQuestionDTO {
     answers: IAnswer[]
 }
 
-export interface ICreateEditQuestionAnswer { 
-    title: string, 
+export interface ICreateEditQuestionAnswer {
+    title: string,
     description: string,
-    fieldsShowsIds?: string[] 
+    fieldsShowsIds?: string[]
 }
-
-export interface IFieldsShowsResponseItem {
-    code: string;
-    name: string;
-  }

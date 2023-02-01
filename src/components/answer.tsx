@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useContext } from 'react'
 import { feelTreeAnswers } from '../utils/answerUtils';
 import { deleteTreeNodes } from '../utils/deleteTreeNodes';
 import { ActionType, IOption, optionsAnswer } from './popupMenu/menuOptions';
@@ -7,9 +7,10 @@ import { IAnswerDTO, ICreateEditQuestionAnswer, IInternalAnswerDTO, IQuestionDTO
 import { styled } from "@mui/material/styles";
 import { Card, Typography } from '@mui/material';
 import { ModalAnswer } from './modals/modalAnswer';
+import { context } from './context/context';
+import { nanoid } from 'nanoid';
 
 const prefix = 'Answer';
-
 const classes = {
     rootContent: `${prefix}-rootContent`,
     header: `${prefix}-header`,
@@ -61,6 +62,7 @@ export const Answer = ({
     index,
     questionBefore,
 }: IAnswerProps) => {
+    const { xmlId } = useContext(context);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -95,7 +97,7 @@ export const Answer = ({
     }
 
     const addQuestion = (value: ICreateEditQuestionAnswer) => {
-        const questionCode = `${Math.random()}`;
+        const questionCode = `${xmlId}-${nanoid(8)}`;
         const question: IQuestionDTO = {
             code: questionCode,
             name: value.title,
@@ -104,7 +106,7 @@ export const Answer = ({
         }
         questions.push(question);
 
-        const answerCode = `${Math.random()}`;
+        const answerCode = `${xmlId}-${nanoid(8)}`;
         const answer: IAnswerDTO = {
             answer: [],
             name: value.title,

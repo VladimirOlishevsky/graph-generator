@@ -1,7 +1,13 @@
-import { IAnswerDTO, IFieldsShowsResponseItem, IQuestionDTO } from "../types";
+import { IAnswerDTO, IResponseFields, IQuestionDTO, IResponseQuestion } from "../types";
 
 export interface IInitialState {
   questions: IQuestionDTO[],
   answers: IAnswerDTO[]
-  fieldsShows: IFieldsShowsResponseItem[],
+  fieldsShows: IResponseFields[],
+
+  rootQuestion: IResponseQuestion,
+  answersAfterRootQuestion?: IAnswerDTO[],
+
+  scriptUrl: string,
+  xmlId: string
 }

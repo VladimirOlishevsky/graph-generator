@@ -1,68 +1,54 @@
-import React, { ReactNode, useEffect } from 'react';
-import { newMock } from '../mock';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { context } from './context';
 import { IInitialState } from './types';
 import axios from "axios";
+import { IResponseData, IResponseQuestion } from '../types';
 
 
-interface IProp {
+interface IContextProviderProps {
   children: ReactNode,
 }
 
-export const ContextProvider = ({ children }: IProp) => {
+export const ContextProvider = ({ children }: IContextProviderProps) => {
 
-
-  const url = import.meta.env.VITE_GET_SCRIPT_API_ENDPOINT
+  const scriptUrl = import.meta.env.VITE_SCRIPT_API_ENDPOINT
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const xmlId = urlParams.get('script')
+  const xmlId = urlParams.get('script') || '';
+
+  const [responseState, setResponseState] = useState<IResponseData>()
+
+  // testcodescript
 
   const getGraph = async () => {
-
-    // {"Access-Control-Allow-Origin", "*"}
-
-    const response = await axios({
+    return await axios<IResponseData>({
       method: 'post',
-      url: url,
-      data: { "xml_id":"testcodescript" }
+      url: scriptUrl,
+      data: { "xml_id": xmlId },
     });
-
-    
-
-
-    // const response =  axios.post('https://bitrix24rrt-develop-dev5.dev.rrt.ru/api/graph_generation/', JSON.stringify({"xml_id":"testcodescript"})),
-
-    
-    // const response = await fetch('https://bitrix24rrt-develop-dev5.dev.rrt.ru/api/graph_generation/', {
-    //   method: 'POST',
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     "Access-Control-Allow-Origin": "http://localhost:5173/",
-    //     "Access-Control-Allow-Methods": "GET,POST,OPTIONS,DELETE,PUT",
-    // },
-    // body: JSON.stringify({"xml_id":"testcodescript"})
-    // });
-
-    console.log(response)
   }
 
+  const questions = responseState?.question;
+  const answers = responseState?.answer;
+  const fieldsShows = responseState?.fields;
+
   useEffect(() => {
-    getGraph()
+    getGraph().then(res => setResponseState(res.data))
   }, [])
 
-
-  const questions = newMock.question;
-  const answers = newMock.answer;
-  const fieldsShows = newMock.fields;
-  // const questions = mockQuestions;
-  // const answers = mockAnswers;
-  // const fieldsShows = mockFieldShows;
-
+  const constQuestionsLinks = answers?.reduce((accumulator: string[], currentValue) => accumulator.concat(currentValue.answer.map(x => x.question_next)), []);
+  const rootQuestion = questions?.filter(f => !constQuestionsLinks?.find(x => f.code == x))[0];
+  const answersAfterRootQuestion = answers?.filter(el => el.question === rootQuestion?.code)
 
   const initialState: IInitialState = {
-    questions,
-    answers,
-    fieldsShows,
+    questions: questions || [],
+    answers: answers || [],
+    fieldsShows: fieldsShows || [],
+    rootQuestion: rootQuestion || {} as IResponseQuestion,
+    answersAfterRootQuestion,
+
+    scriptUrl,
+    xmlId
   };
 
   return (

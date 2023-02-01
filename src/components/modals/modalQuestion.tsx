@@ -6,7 +6,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { context } from "../context/context";
 import { ActionType } from "../popupMenu/menuOptions";
-import { ICreateEditQuestionAnswer, IQuestionDTO, IFieldsShowsResponseItem } from "../types";
+import { ICreateEditQuestionAnswer, IQuestionDTO, IResponseFields } from "../types";
 import { modalStyle, StyledTextField } from "./constants";
 
 export interface IModalQuestionProps {
@@ -48,8 +48,8 @@ export const ModalQuestion = ({
         return fieldsShows.filter(el => question?.fields_shows.some(value => value === el.code))
     }
 
-    const [questionTags, setQuestionTags] = useState<IFieldsShowsResponseItem[]>(actionType === 'add' ? [] : getFieldsShows());
-    const handleChangeQuestionTags = (e: React.SyntheticEvent<Element, Event>, value: IFieldsShowsResponseItem[]) => {
+    const [questionTags, setQuestionTags] = useState<IResponseFields[]>(actionType === 'add' ? [] : getFieldsShows());
+    const handleChangeQuestionTags = (e: React.SyntheticEvent<Element, Event>, value: IResponseFields[]) => {
         e.preventDefault();
         setQuestionTags(value);
     };

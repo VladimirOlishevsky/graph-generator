@@ -1,7 +1,7 @@
 import { Box, Typography, Button, TextField, Modal as ModalComponent, Fade } from "@mui/material";
 import React, { useState, useContext } from "react";
 import { ActionType } from "../popupMenu/menuOptions";
-import { ICreateEditQuestionAnswer, IQuestionDTO, IInternalAnswerDTO, IFieldsShowsResponseItem } from "../types";
+import { ICreateEditQuestionAnswer, IQuestionDTO, IInternalAnswerDTO, IResponseFields } from "../types";
 import Checkbox from "@mui/material/Checkbox/Checkbox";
 import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -26,7 +26,7 @@ export interface IModalAnswerProps {
 interface IModalAnswerState {
     title?: string,
     description?: string,
-    fieldsShows?: IFieldsShowsResponseItem[]
+    fieldsShows?: IResponseFields[]
 }
 
 export const ModalAnswer = ({
@@ -53,7 +53,7 @@ export const ModalAnswer = ({
         fieldsShows: []
     })
 
-    const handleChangeQuestionTags = (e: React.SyntheticEvent<Element, Event>, value: IFieldsShowsResponseItem[]) => {
+    const handleChangeQuestionTags = (e: React.SyntheticEvent<Element, Event>, value: IResponseFields[]) => {
         e.preventDefault();
         setTextFieldsState({ ...textFieldsState, fieldsShows: value });
     };

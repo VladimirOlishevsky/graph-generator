@@ -135,7 +135,7 @@ export const Question = ({
 
     const adaptOptions = !isRootQuestion ? [...optionsQuestion, { type: 'delete', value: 'Удалить' }] : optionsQuestion;
 
-    const getFieldsShowsId = () => {
+    const getQuestionTags = () => {
         return fieldsShows.filter(el => question?.fields_shows.some(value => value === el.code))
     }
 
@@ -158,7 +158,7 @@ export const Question = ({
                 <Typography>{question.name}</Typography>
                 <Typography>{question.descr}</Typography>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                    {getFieldsShowsId().map(el => <Chip key={el.code} label={el.name} />)}
+                    {getQuestionTags().map(el => <Chip key={el.code} label={el.name} />)}
                 </div>
                 {Boolean(questionAnswer.answer.length) ? (
                     <div className={classes.expandIconWrapper}>
