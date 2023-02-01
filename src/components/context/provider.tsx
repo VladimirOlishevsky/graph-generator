@@ -23,9 +23,8 @@ export const ContextProvider = ({ children }: IProp) => {
 
     const response = await axios({
       method: 'post',
-      headers: {"Access-Control-Allow-Origin": "*"},
       url: url,
-      data: JSON.stringify({ "xml_id":"testcodescript" })
+      data: { "xml_id":"testcodescript" }
     });
 
     
