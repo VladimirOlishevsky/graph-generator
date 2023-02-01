@@ -12,7 +12,7 @@ export const deleteTreeNodes = ({
     commonQuestions,
     commonAnswers,
 }: IFilterExcludeDeleteElements) => {
-    const obj = getFlatQuestionsAndAnswers(questions);
-    obj.questions.forEach(x => commonQuestions.some((value, index) => value.code === x.code && commonQuestions.splice(index, 1)));
-    obj.answers.forEach(ll => commonAnswers.some((el, index)=> el.question === ll.question  && commonAnswers.splice(index, 1)));
+    const flatObj = getFlatQuestionsAndAnswers(questions);
+    flatObj.question.forEach(q => commonQuestions.some((value, index) => value.code === q.code && commonQuestions.splice(index, 1)));
+    flatObj.answer.forEach(a => commonAnswers.some((el, index)=> el.question === a.question  && commonAnswers.splice(index, 1)));
 }

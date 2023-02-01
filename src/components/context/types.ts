@@ -8,6 +8,10 @@ export interface IInitialState {
   rootQuestion: IResponseQuestion,
   answersAfterRootQuestion?: IAnswerDTO[],
 
-  scriptUrl: string,
-  xmlId: string
+  urlGetScript: string,
+  urlSendScript: string,
+  xmlId: string,
+
+  isLoading: boolean,
+  setIsLoading: (v: boolean) => void
 }

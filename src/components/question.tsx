@@ -10,6 +10,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import clsx from "clsx";
 import { ModalQuestion } from './modals/modalQuestion';
 import { context } from './context/context';
+import { getFlatQuestionsAndAnswers } from '../utils/getFlatQuestionsAndAnswers';
 
 const prefix = 'Question';
 
@@ -139,9 +140,17 @@ export const Question = ({
         return fieldsShows.filter(el => question?.fields_shows.some(value => value === el.code))
     }
 
+    // todo - delete
+    // const click = () => {
+    //     const tree = getTransformedRootQuestions(questions, answers, [question])
+    //     const result = getFlatQuestionsAndAnswers(tree);
+    //     console.log('question', result)
+    // }
+
     return <Root variant="outlined">
         <div className={classes.rootContent}>
             <div className={classes.header}>
+            {/* <button onClick={click}>get tree</button> */}
                 <Typography fontWeight='700'>вопрос</Typography>
                 <PopupMenu
                     options={adaptOptions as IOption[]}

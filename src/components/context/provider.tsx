@@ -11,21 +11,27 @@ interface IContextProviderProps {
 
 export const ContextProvider = ({ children }: IContextProviderProps) => {
 
-  const scriptUrl = import.meta.env.VITE_SCRIPT_API_ENDPOINT
+  const urlGetScript = import.meta.env.VITE_DEV_EXPORT_SCRIPT_API_ENDPOINT
+  const urlSendScript = import.meta.env.VITE_DEV_IMPORT_SCRIPT_API_ENDPOINT
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const xmlId = urlParams.get('script') || '';
+
+  const [loading, setIsLoading] = useState<boolean>(false)
 
   const [responseState, setResponseState] = useState<IResponseData>()
 
   // testcodescript
 
   const getGraph = async () => {
-    return await axios<IResponseData>({
+    setIsLoading(true);
+    const response = await axios<IResponseData>({
       method: 'post',
-      url: scriptUrl,
+      url: urlGetScript,
       data: { "xml_id": xmlId },
     });
+    setIsLoading(false);
+    return response
   }
 
   const questions = responseState?.question;
@@ -47,8 +53,12 @@ export const ContextProvider = ({ children }: IContextProviderProps) => {
     rootQuestion: rootQuestion || {} as IResponseQuestion,
     answersAfterRootQuestion,
 
-    scriptUrl,
-    xmlId
+    urlGetScript,
+    urlSendScript,
+    xmlId,
+
+    isLoading: loading,
+    setIsLoading: setIsLoading
   };
 
   return (

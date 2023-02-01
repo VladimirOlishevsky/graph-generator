@@ -348,3 +348,118 @@ export const newMock = {
         }
     ]
   }
+
+//   {
+//     "question": [
+//         {
+//             "code": "testcodescript-4735",
+//             "name": "Привествие1",
+//             "descr": "Меня зовут… &#40;свое имя&#41;, координатор отдела сервиса. Скажите пожалуйста полное ФИО собственника автомобиля.\n\n",
+//             "fields_shows": [
+//                 "41",
+//                 "40",
+//                 "42"
+//             ]
+//         },
+//         {
+//             "code": "testcodescript-4737",
+//             "name": "Обслуживались ли вы ранее",
+//             "descr": "Скажите пожалуйста полное ФИО собственника автомобиля.&nbsp;&nbsp;&#40;Имя клиента&#41; обслуживались ли Вы ранее нашем дилерском центре?n",
+//             "fields_shows": [
+//                 "4745"
+//             ]
+//         },
+//         {
+//             "code": "testcodescript-4738",
+//             "name": "Какой авто",
+//             "descr": "Запись для какого автомобиля нужно сформировать &#40;модель, марка&#41;?n",
+//             "fields_shows": [
+//                 "45",
+//                 "46"
+//             ]
+//         },
+//         {
+//             "code": "testcodescript-4740",
+//             "name": "Телефонный номер",
+//             "descr": "Уточните пожалуйста номер телефона для связи. rnrn Мы удалим позже тип осмотра, сейчас он нужен для отладки процессов TradeIN &#40;тип осмотра заполняться не будет менеджером, а всегда будет только в ДЦ&#41;",
+//             "fields_shows": [
+//                 "43"
+//             ]
+//         },
+//         {
+//             "code": "testcodescript-wVfCsVOV",
+//             "name": "quest 1",
+//             "descr": "quest 1",
+//             "fields_shows": [
+//                 "45",
+//                 "44",
+//                 "43"
+//             ]
+//         }
+//     ],
+//     "answer": [
+//         {
+//             "code": "testcodescript-4909",
+//             "name": "Привествие",
+//             "question": "testcodescript-4735",
+//             "answer": [
+//                 {
+//                     "name": "Далее",
+//                     "question_next": "testcodescript-4737"
+//                 },
+//                 {
+//                     "name": "Новый ответ 2",
+//                     "question_next": "testcodescript-wVfCsVOV"
+//                 }
+//             ]
+//         },
+//         {
+//             "code": "testcodescript-4910",
+//             "name": "Обслуживались ли вы ранее",
+//             "question": "testcodescript-4737",
+//             "answer": [
+//                 {
+//                     "name": "Далее",
+//                     "question_next": "testcodescript-4738"
+//                 }
+//             ]
+//         },
+//         {
+//             "code": "testcodescript-4911",
+//             "name": "Какой авто",
+//             "question": "testcodescript-4738",
+//             "answer": [
+//                 {
+//                     "name": "Далее",
+//                     "question_next": "testcodescript-4740"
+//                 }
+//             ]
+//         },
+//         {
+//             "code": "testcodescript-4912",
+//             "name": "Продолжите в 1с",
+//             "question": "testcodescript-4740",
+//             "answer": [
+//                 {
+//                     "name": "Далее",
+//                     "question_next": ""
+//                 }
+//             ]
+//         },
+//         {
+//             "answer": [
+//                 {
+//                     "name": "1111111111",
+//                     "question_next": ""
+//                 },
+//                 {
+//                     "name": "22222222222",
+//                     "question_next": ""
+//                 }
+//             ],
+//             "name": "quest 1",
+//             "code": "testcodescript-FP11gCwd",
+//             "question": "testcodescript-wVfCsVOV"
+//         }
+//     ]
+// }

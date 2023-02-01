@@ -10,10 +10,20 @@ import { context } from "./context/context";
 import { Loader } from "./loader";
 import axios from "axios";
 import { nanoid } from 'nanoid';
+import { Button } from '@mui/material';
 
 
-const SchemaTree = (): JSX.Element => {
-    const { questions, answers, rootQuestion, answersAfterRootQuestion, scriptUrl, xmlId } = useContext(context);
+const SchemaTree = (): JSX.Element | null => {
+    const {
+        questions,
+        answers,
+        rootQuestion,
+        answersAfterRootQuestion,
+        urlSendScript,
+        xmlId,
+        isLoading,
+        setIsLoading
+    } = useContext(context);
     const [_, setState] = useState('');
 
     const rerenderSchema = () => {
@@ -24,31 +34,30 @@ const SchemaTree = (): JSX.Element => {
         console.log('связи не найдены')
     }
 
-    // const tree = getTransformedRootQuestions(questions, answers, [rootQuestion]);
-    // const result = getFlatQuestionsAndAnswers(tree);
+    const tree = getTransformedRootQuestions(questions, answers, [rootQuestion]);
+    const result = getFlatQuestionsAndAnswers(tree);
 
-    // const obj = {
-    //     json: result
-    // }
+    const sendScriptResult = async () => {
+        setIsLoading(true);
+        await axios<void>({
+            method: 'post',
+            url: urlSendScript,
+            data: { json: [{ ...result }] },
+        });
+        setIsLoading(false);
+    }
 
-    // const sendScriptResult = async () => {
-    //     const res = await axios<void>({
-    //         method: 'post',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         url: scriptUrl,
-    //         data: JSON.stringify(obj),
-    //     });
-    //     console.log('res', res)
-    // }
+    const buttonStyle = {
+        "&:focus": {
+            outline: 'none',
+        }
+    };
 
-    // console.log('result', result)
-
-    return rootQuestion.code ? (
-        <div>
-            {/* <button onClick={sendScriptResult}>Сохранить</button> */}
-            <button onClick={() => console.log('result')}>Сохранить</button>
+    return (
+        <div style={{ display: 'flex', flexDirection: "column", gap: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Button sx={buttonStyle} variant="contained" onClick={sendScriptResult}>Сохранить скрипт</Button>
+            </div>
             {getQuestionAnswer({
                 questions,
                 answers,
@@ -57,8 +66,9 @@ const SchemaTree = (): JSX.Element => {
                 isRoot: true,
                 xmlId: xmlId
             })}
+            <Loader isShow={isLoading} />
         </div>
-    ) : <Loader isShow={!rootQuestion.code} />
+    )
 }
 
 interface IGetQuestionAnswer {
@@ -152,27 +162,6 @@ const getQuestionAnswer = ({
 
 
 export const Graph = () => {
-
-    // const queryString = window.location.search;
-    // console.log('queryString', queryString);
-    // const urlParams = new URLSearchParams(queryString);
-    // console.log('urlParams', urlParams);
-    // console.log('urlParams.getscript', urlParams.get('script'));
-
-    // const newMockQuest = newMock.question
-    // const newMockAnsw = newMock.answer
-
-    // const constQuestionsLinks: string[] = newMockAnsw.reduce((accumulator: string[], currentValue) => accumulator.concat(currentValue.answer.map(x => x.question_next)), []);
-    // const rootQuestion = newMockQuest.filter(f => !constQuestionsLinks.find(x => f.code == x))[0];
-
-
-    // const constQuestionsLinks: string[] = mockAnswers.reduce((accumulator: string[], currentValue) => accumulator.concat(currentValue.answer.map(x => x.question_next)), []);
-    // const rootQuestion = mockQuestions.filter(f => !constQuestionsLinks.find(x => f.code == x))[0];
-
-    // rootQuestion - вопроса которого нет в question_next
-    // return <SchemaTree questions={mockQuestions} answers={mockAnswers} rootQuestion={rootQuestion} />;
-
-
     return (
         <ContextProvider>
             <SchemaTree />

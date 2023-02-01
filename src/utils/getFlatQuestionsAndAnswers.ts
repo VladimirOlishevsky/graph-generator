@@ -1,7 +1,6 @@
 import { IAnswerDTO, IQuestion, IQuestionDTO, IResponseQuestion } from "../components/types";
 
 export interface IGetFlatQuestionsAndAnswers { 
-    // question: IQuestionDTO[], 
     question: IResponseQuestion[], 
     answer: IAnswerDTO[] 
 }
@@ -40,7 +39,6 @@ export const getFlatQuestionsAndAnswers = (questions: IQuestion[]): IGetFlatQues
     questions.forEach(f => proceedQuestion(f, answersDTO, questionsDTO))
     
     return {
-    //   question: questionsDTO,
       question: questionsDTO.filter(props => delete props.isCollapse),
       answer: answersDTO 
     } 

@@ -9,6 +9,8 @@ import { Card, Typography } from '@mui/material';
 import { ModalAnswer } from './modals/modalAnswer';
 import { context } from './context/context';
 import { nanoid } from 'nanoid';
+import { getTransformedRootQuestions } from '../utils/questionUtils';
+import { getFlatQuestionsAndAnswers } from '../utils/getFlatQuestionsAndAnswers';
 
 const prefix = 'Answer';
 const classes = {
@@ -68,7 +70,7 @@ export const Answer = ({
     const open = Boolean(anchorEl);
     const activeTypeRef = useRef<ActionType>();
     const [openModal, setOpenModal] = useState(false);
-    
+
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -77,22 +79,24 @@ export const Answer = ({
     };
 
     const questionAnswerVariant = questionAnswer.answer.find(el => el.name === answerVariant.name);
-    const rootQuestionAfterAnswer = questionAnswerVariant?.question_next && feelTreeAnswers({
+    const rootQuestionAfterAnswer = questionAnswerVariant?.question_next ? feelTreeAnswers({
         questions,
         answers,
         answer: questionAnswer,
         answerVariant: questionAnswerVariant
-    });
+    }) : undefined;
 
     const deleteClick = () => {
-        if (questionAnswerVariant) {
-            rootQuestionAfterAnswer && deleteTreeNodes({
+        if (questionAnswerVariant && rootQuestionAfterAnswer) {
+            deleteTreeNodes({
                 questions: [rootQuestionAfterAnswer],
                 commonQuestions: questions,
                 commonAnswers: answers,
             })
-            questionAnswer.answer.splice(index, 1);
         }
+        questionAnswer.answer.splice(index, 1);
+        setOpenModal(false);
+        handleCloseMenu();
         rerenderSheema?.();
     }
 
@@ -116,43 +120,42 @@ export const Answer = ({
         answers.push(answer);
 
         answerVariant.question_next = questionCode;
+        handleCloseMenu();
         rerenderSheema?.();
     }
-
-    const handleAddQuestion = (value: ICreateEditQuestionAnswer) => {
-        addQuestion(value);
-        handleCloseMenu()
-    };
 
     // edit
     const handleEditAnswer = (value: ICreateEditQuestionAnswer) => {
         questionAnswerVariant ? questionAnswerVariant.name = value.description : null
-        handleCloseMenu()
+        handleCloseMenu();
+        rerenderSheema?.();
     };
 
-    //delete
-    const handleDeleteAnswer = () => {
-        deleteClick();
-        handleCloseMenu()
-    };
     const adaptOptions = [!rootQuestionAfterAnswer ? { type: 'add', value: 'Добавить вопрос' } : { type: 'empty', value: '' }, ...optionsAnswer]
+
+    // todo - delete
+    // const click = () => {
+    //     const tree = rootQuestionAfterAnswer && getTransformedRootQuestions(questions, answers, [rootQuestionAfterAnswer]);
+    //     const result = tree && getFlatQuestionsAndAnswers(tree);
+    //     console.log(result)
+    // }
 
     return (
         <Root variant="outlined">
             <div className={classes.rootContent}>
-            <div className={classes.header}>
-                <Typography fontWeight='700'>ответ</Typography>
-                <PopupMenu
-                    anchorEl={anchorEl}
-                    handleOpenMenu={handleOpenMenu}
-                    handleCloseMenu={handleCloseMenu}
-                    open={open}
-                    options={adaptOptions as IOption[]}
+                <div className={classes.header}>
+                    <Typography fontWeight='700'>ответ</Typography>
+                    <PopupMenu
+                        anchorEl={anchorEl}
+                        handleOpenMenu={handleOpenMenu}
+                        handleCloseMenu={handleCloseMenu}
+                        open={open}
+                        options={adaptOptions as IOption[]}
 
-                    activeTypeRef={activeTypeRef}
-                    setOpenModal={setOpenModal}
-                />
-            </div>
+                        activeTypeRef={activeTypeRef}
+                        setOpenModal={setOpenModal}
+                    />
+                </div>
                 <Typography align='left'>{answerVariant.name}</Typography>
                 <ModalAnswer
                     open={openModal}
@@ -160,15 +163,16 @@ export const Answer = ({
                         setOpenModal(false)
                         handleCloseMenu();
                     }}
-                    handleCreate={handleAddQuestion}
+                    handleCreate={addQuestion}
                     handleEdit={handleEditAnswer}
-                    handleDelete={handleDeleteAnswer}
+                    handleDelete={deleteClick}
                     actionType={activeTypeRef.current}
 
                     question={questionBefore}
                     answer={questionAnswerVariant}
                 />
             </div>
+            {/* <button onClick={click}>get tree</button> */}
         </Root>
     )
 }
