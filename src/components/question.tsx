@@ -140,7 +140,7 @@ export const Question = ({
         return fieldsShows.filter(el => question?.fields_shows.some(value => value === el.code))
     }
 
-    // todo - delete
+    // todo -
     // const click = () => {
     //     const tree = getTransformedRootQuestions(questions, answers, [question])
     //     const result = getFlatQuestionsAndAnswers(tree);

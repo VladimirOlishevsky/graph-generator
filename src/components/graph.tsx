@@ -53,10 +53,16 @@ const SchemaTree = (): JSX.Element | null => {
         }
     };
 
+    const click = () => {
+        // rerenderSchema();
+        console.log('flat tree', result)
+    }
+
     return (
         <div style={{ display: 'flex', flexDirection: "column", gap: 20 }}>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
                 <Button sx={buttonStyle} variant="contained" onClick={sendScriptResult}>Сохранить скрипт</Button>
+                <Button sx={buttonStyle} variant="contained" onClick={click}>Посмотреть дерево в консоли</Button>
             </div>
             {getQuestionAnswer({
                 questions,
