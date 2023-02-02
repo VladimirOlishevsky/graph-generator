@@ -13,5 +13,8 @@ export interface IInitialState {
   xmlId: string,
 
   isLoading: boolean,
-  setIsLoading: (v: boolean) => void
+  setIsLoading: (v: boolean) => void,
+
+  question_del: string[]
+  answer_del: string[]
 }

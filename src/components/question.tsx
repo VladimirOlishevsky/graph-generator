@@ -85,7 +85,7 @@ export const Question = ({
     answers,
     isRootQuestion,
 }: IQuestionProps) => {
-    const { fieldsShows } = useContext(context);
+    const { fieldsShows, question_del, answer_del } = useContext(context);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -122,7 +122,9 @@ export const Question = ({
         deleteTreeNodes({
             questions: tree,
             commonQuestions: questions,
-            commonAnswers: answers
+            commonAnswers: answers,
+            question_del, 
+            answer_del
         })
         handleCloseMenu();
         rerenderSheema?.();

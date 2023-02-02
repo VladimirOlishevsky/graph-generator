@@ -15,5 +15,8 @@ export const context = createContext<IInitialState>({
   xmlId: '',
 
   isLoading: false,
-  setIsLoading: () => {}
+  setIsLoading: () => {},
+
+  question_del: [],
+  answer_del: []
 });

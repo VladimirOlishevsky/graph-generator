@@ -46,7 +46,10 @@ const SchemaTree = (): JSX.Element | null => {
         urlSendScript,
         xmlId,
         isLoading,
-        setIsLoading
+        setIsLoading,
+
+        question_del,
+        answer_del
     } = useContext(context);
     const [_, setState] = useState('');
 
@@ -66,7 +69,7 @@ const SchemaTree = (): JSX.Element | null => {
         await axios<void>({
             method: 'post',
             url: urlSendScript,
-            data: { json: [{ ...result }] },
+            data: { json: [{ ...result, question_del, answer_del }] },
         });
         setIsLoading(false);
     }

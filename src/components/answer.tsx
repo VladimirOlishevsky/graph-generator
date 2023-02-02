@@ -62,7 +62,7 @@ export const Answer = ({
     index,
     questionBefore,
 }: IAnswerProps) => {
-    const { xmlId } = useContext(context);
+    const { xmlId, question_del, answer_del } = useContext(context);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -91,6 +91,8 @@ export const Answer = ({
                 questions: [rootQuestionAfterAnswer],
                 commonQuestions: questions,
                 commonAnswers: answers,
+                question_del,
+                answer_del
             })
         }
         questionAnswer.answer.splice(index, 1);

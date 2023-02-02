@@ -37,6 +37,9 @@ export const ContextProvider = ({ children }: IContextProviderProps) => {
   const answers = responseState?.answer;
   const fieldsShows = responseState?.fields;
 
+  const question_del: string[] = []
+  const answer_del: string[] = []
+
   useEffect(() => {
     getGraph().then(res => setResponseState(res.data))
   }, [])
@@ -57,12 +60,13 @@ export const ContextProvider = ({ children }: IContextProviderProps) => {
     xmlId,
 
     isLoading: loading,
-    setIsLoading: setIsLoading
+    setIsLoading: setIsLoading,
+
+    question_del,
+    answer_del
   };
 
   return (
     <context.Provider value={initialState}>{children}</context.Provider>
   );
 };
-
-// test commit - delete
