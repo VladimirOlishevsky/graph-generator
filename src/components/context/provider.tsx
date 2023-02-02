@@ -11,14 +11,10 @@ interface IContextProviderProps {
   children: ReactNode,
 }
 
-const url1='https://bitrix24rrt-develop-dev5.dev.rrt.ru/api/graph_generation/'
-const url2='https://bitrix24rrt-develop-dev5.dev.rrt.ru/api/graph_generation_import/'
 export const ContextProvider = ({ children }: IContextProviderProps) => {
 
-  const urlGetScript = url1
-  const urlSendScript = url2
-  // const urlGetScript = import.meta.env.VITE_EXPORT_SCRIPT_API_ENDPOINT
-  // const urlSendScript = import.meta.env.VITE_IMPORT_SCRIPT_API_ENDPOINT
+  const urlGetScript = import.meta.env.VITE_EXPORT_SCRIPT_API_ENDPOINT
+  const urlSendScript = import.meta.env.VITE_IMPORT_SCRIPT_API_ENDPOINT
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const xmlId = urlParams.get('script') || '';
