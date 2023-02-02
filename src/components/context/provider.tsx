@@ -3,6 +3,7 @@ import { context } from './context';
 import { IInitialState } from './types';
 import axios from "axios";
 import { IResponseData, IResponseQuestion } from '../types';
+import { newGraphMock } from '../mock';
 
 
 interface IContextProviderProps {
@@ -20,6 +21,7 @@ export const ContextProvider = ({ children }: IContextProviderProps) => {
   const [loading, setIsLoading] = useState<boolean>(false)
 
   const [responseState, setResponseState] = useState<IResponseData>()
+  // const [responseState, setResponseState] = useState<IResponseData>(newGraphMock)
 
   // testcodescript
 
