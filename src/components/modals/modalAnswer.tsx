@@ -7,19 +7,16 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { context } from "../context/context";
-import { modalStyle, StyledTextField } from "./constants";
+import { modalContentClasses, modalStyle, StyledModalContentComponent, StyledTextField } from "./constants";
 
 export interface IModalAnswerProps {
     open: boolean,
-    handleClose: () => void,
-    // create
-    handleCreate?: (value: ICreateEditQuestionAnswer) => void
-    //editComponent
+    handleCloseModal: () => void,
+    handleCreateQuestion: (value: ICreateEditQuestionAnswer) => void
     question?: IQuestionDTO,
     answer?: IInternalAnswerDTO,
-    handleEdit?: (value: ICreateEditQuestionAnswer) => void,
-    //delete
-    handleDelete?: () => void,
+    handleEditAnswer?: (value: ICreateEditQuestionAnswer) => void,
+    handleDeleteAnswer?: () => void,
     actionType?: ActionType,
 }
 
@@ -31,12 +28,12 @@ interface IModalAnswerState {
 
 export const ModalAnswer = ({
     open,
-    handleClose,
-    handleCreate,
-    handleEdit,
+    handleCloseModal,
+    handleCreateQuestion,
+    handleEditAnswer,
     question,
     answer,
-    handleDelete,
+    handleDeleteAnswer,
     actionType,
 }: IModalAnswerProps) => {
 
@@ -61,13 +58,13 @@ export const ModalAnswer = ({
     const deleteComponent = () => {
         return (
             <Box sx={modalStyle}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                <StyledModalContentComponent>
                     <Typography>{`Вы действительно хотите удалить ответ?`}</Typography>
-                    <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                        <Button onClick={handleDelete} variant="outlined">Да</Button>
-                        <Button onClick={handleClose} variant="outlined">Нет</Button>
+                    <div className={modalContentClasses.buttonWrapper}>
+                        <Button onClick={handleDeleteAnswer} variant="outlined">Да</Button>
+                        <Button onClick={handleCloseModal} variant="outlined">Нет</Button>
                     </div>
-                </div>
+                </StyledModalContentComponent>
             </Box>
         )
     }
@@ -80,7 +77,7 @@ export const ModalAnswer = ({
                 noValidate
                 autoComplete="off"
             >
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                <StyledModalContentComponent>
                     <Typography>{`${condition ? 'Добавление' : 'Редактирование'} ${conditionWord}`}</Typography>
                     <StyledTextField
                         disabled={actionType === 'edit'}
@@ -126,28 +123,26 @@ export const ModalAnswer = ({
                     <Button
                         disabled={!textFieldsState.title || !textFieldsState.description}
                         onClick={() => {
-                            (condition ? handleCreate : handleEdit)?.(
+                            (condition ? handleCreateQuestion : handleEditAnswer)?.(
                                 {
                                     title: textFieldsState.title || '',
                                     description: textFieldsState.description || '',
                                     fieldsShowsIds: textFieldsState.fieldsShows?.map(el => el.code)
                                 }
                             )
-                            handleClose();
+                            handleCloseModal();
                         }}
                         variant="outlined"
                     >
-                        Добавить
+                       {condition ? 'Добавить' : 'Сохранить'}
                     </Button>
                     <Button
-                        onClick={() => {
-                            handleClose();
-                        }}
+                        onClick={handleCloseModal}
                         variant="outlined"
                     >
                         Отмена
                     </Button>
-                </div>
+                </StyledModalContentComponent>
             </Box>
         )
     }
@@ -155,7 +150,7 @@ export const ModalAnswer = ({
     return (
         <ModalComponent
             open={open}
-            onClose={handleClose}
+            onClose={handleCloseModal}
             closeAfterTransition
         >
             <Fade in={open}>

@@ -10,10 +10,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import clsx from "clsx";
 import { ModalQuestion } from './modals/modalQuestion';
 import { context } from './context/context';
-import { getFlatQuestionsAndAnswers } from '../utils/getFlatQuestionsAndAnswers';
 
 const prefix = 'Question';
-
 const classes = {
     rootContent: `${prefix}-rootContent`,
     header: `${prefix}-header`,
@@ -21,7 +19,7 @@ const classes = {
     expandIconWrapper: `${prefix}-expandIconWrapper`,
     expand: `${prefix}-expand`,
     expandOpen: `${prefix}-expandOpen`,
-
+    tagsWrapper: `${prefix}-tagsWrapper`,
 };
 
 const Root = styled(Card)(() => ({
@@ -34,7 +32,6 @@ const Root = styled(Card)(() => ({
         flexDirection: 'column',
         gap: 12,
     },
-
     [`& .${classes.header}`]: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -49,13 +46,11 @@ const Root = styled(Card)(() => ({
         maxWidth: 300,
         textAlign: 'left'
     },
-
     [`& .${classes.expandIconWrapper}`]: {
         display: 'flex',
         justifyContent: 'center',
         width: '100%'
     },
-
     [`& .${classes.expand}`]: {
         transform: "rotate(0deg)",
         transition: "transform 0.15s ease-in",
@@ -63,9 +58,13 @@ const Root = styled(Card)(() => ({
             outline: 'none',
         }
     },
-
     [`& .${classes.expandOpen}`]: {
         transform: "rotate(180deg)"
+    },
+    [`& .${classes.tagsWrapper}`]: {
+        display: 'flex', 
+        gap: 6, 
+        flexWrap: 'wrap'
     },
 }));
 
@@ -140,17 +139,9 @@ export const Question = ({
         return fieldsShows.filter(el => question?.fields_shows.some(value => value === el.code))
     }
 
-    // todo -
-    // const click = () => {
-    //     const tree = getTransformedRootQuestions(questions, answers, [question])
-    //     const result = getFlatQuestionsAndAnswers(tree);
-    //     console.log('question', result)
-    // }
-
     return <Root variant="outlined">
         <div className={classes.rootContent}>
             <div className={classes.header}>
-            {/* <button onClick={click}>get tree</button> */}
                 <Typography fontWeight='700'>вопрос</Typography>
                 <PopupMenu
                     options={adaptOptions as IOption[]}
@@ -166,7 +157,7 @@ export const Question = ({
             <div className={classes.content}>
                 <Typography>{question.name}</Typography>
                 <Typography>{question.descr}</Typography>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                <div className={classes.tagsWrapper}>
                     {getQuestionTags().map(el => <Chip key={el.code} label={el.name} />)}
                 </div>
                 {Boolean(questionAnswer.answer.length) ? (
@@ -184,15 +175,14 @@ export const Question = ({
         <ModalQuestion
             key={question.name + question.descr}
             open={openModal}
-            handleClose={() => {
+            handleCloseModal={() => {
                 setOpenModal(false)
                 handleCloseMenu();
             }}
-            handleCreate={createAnswer}
-            handleEdit={editQuestion}
-            handleDelete={deleteQuestion}
+            handleCreateAnswer={createAnswer}
+            handleEditQuestion={editQuestion}
+            handleDeleteQuestion={deleteQuestion}
             actionType={activeTypeRef.current}
-
             question={question}
         />
     </Root>

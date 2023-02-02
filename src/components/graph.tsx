@@ -11,7 +11,31 @@ import { Loader } from "./loader";
 import axios from "axios";
 import { nanoid } from 'nanoid';
 import { Button } from '@mui/material';
+import styled from "@emotion/styled";
 
+
+const prefix = 'SchemaTree';
+const classes = {
+    root: `${prefix}-rootContent`,
+    saveButtonWrapper: `${prefix}-saveButtonWrapper`,
+    button: `${prefix}-button`,
+};
+
+const RootSchemaTree = styled('div')(() => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 20,
+
+    [`& .${classes.saveButtonWrapper}`]: {
+        display: 'flex',
+        justifyContent: 'center'
+    },
+    [`& .${classes.button}`]: {
+        "&:focus": {
+            outline: 'none',
+        }
+    },
+}));
 
 const SchemaTree = (): JSX.Element | null => {
     const {
@@ -47,24 +71,14 @@ const SchemaTree = (): JSX.Element | null => {
         setIsLoading(false);
     }
 
-    const buttonStyle = {
-        "&:focus": {
-            outline: 'none',
-        }
-    };
-
-    const click = () => {
-        // rerenderSchema();
-        console.log('flat tree', result)
-    }
-
     return (
-        <div style={{ display: 'flex', flexDirection: "column", gap: 20 }}>
+        <RootSchemaTree>
             {rootQuestion.code && (
                 <>
-                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
-                        <Button sx={buttonStyle} variant="contained" onClick={sendScriptResult}>Сохранить скрипт</Button>
-                        <Button sx={buttonStyle} variant="contained" onClick={click}>Посмотреть дерево в консоли</Button>
+                    <div className={classes.saveButtonWrapper}>
+                        <Button className={classes.button} variant="contained" onClick={sendScriptResult}>
+                            Сохранить скрипт
+                        </Button>
                     </div>
                     {getQuestionAnswer({
                         questions,
@@ -77,7 +91,7 @@ const SchemaTree = (): JSX.Element | null => {
                 </>
             )}
             <Loader isShow={isLoading} />
-        </div>
+        </RootSchemaTree>
     )
 }
 

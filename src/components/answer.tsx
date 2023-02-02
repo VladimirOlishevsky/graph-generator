@@ -9,8 +9,6 @@ import { Card, Typography } from '@mui/material';
 import { ModalAnswer } from './modals/modalAnswer';
 import { context } from './context/context';
 import { nanoid } from 'nanoid';
-import { getTransformedRootQuestions } from '../utils/questionUtils';
-import { getFlatQuestionsAndAnswers } from '../utils/getFlatQuestionsAndAnswers';
 
 const prefix = 'Answer';
 const classes = {
@@ -86,7 +84,8 @@ export const Answer = ({
         answerVariant: questionAnswerVariant
     }) : undefined;
 
-    const deleteClick = () => {
+    // delete
+    const deleteAnswer = () => {
         if (questionAnswerVariant && rootQuestionAfterAnswer) {
             deleteTreeNodes({
                 questions: [rootQuestionAfterAnswer],
@@ -100,6 +99,7 @@ export const Answer = ({
         rerenderSheema?.();
     }
 
+    // add question
     const addQuestion = (value: ICreateEditQuestionAnswer) => {
         const questionCode = `${xmlId}-${nanoid(8)}`;
         const question: IQuestionDTO = {
@@ -133,13 +133,6 @@ export const Answer = ({
 
     const adaptOptions = [!rootQuestionAfterAnswer ? { type: 'add', value: 'Добавить вопрос' } : { type: 'empty', value: '' }, ...optionsAnswer]
 
-    // todo - delete
-    // const click = () => {
-    //     const tree = rootQuestionAfterAnswer && getTransformedRootQuestions(questions, answers, [rootQuestionAfterAnswer]);
-    //     const result = tree && getFlatQuestionsAndAnswers(tree);
-    //     console.log(result)
-    // }
-
     return (
         <Root variant="outlined">
             <div className={classes.rootContent}>
@@ -159,20 +152,18 @@ export const Answer = ({
                 <Typography align='left'>{answerVariant.name}</Typography>
                 <ModalAnswer
                     open={openModal}
-                    handleClose={() => {
+                    handleCloseModal={() => {
                         setOpenModal(false)
                         handleCloseMenu();
                     }}
-                    handleCreate={addQuestion}
-                    handleEdit={handleEditAnswer}
-                    handleDelete={deleteClick}
+                    handleCreateQuestion={addQuestion}
+                    handleEditAnswer={handleEditAnswer}
+                    handleDeleteAnswer={deleteAnswer}
                     actionType={activeTypeRef.current}
-
                     question={questionBefore}
                     answer={questionAnswerVariant}
                 />
             </div>
-            {/* <button onClick={click}>get tree</button> */}
         </Root>
     )
 }

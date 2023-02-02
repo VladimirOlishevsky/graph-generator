@@ -18,3 +18,20 @@ export const StyledTextField = styled(TextField)(() => ({
         color: "red"
     }
 }));
+
+const prefix = 'ModalContent';
+export const modalContentClasses = {
+    buttonWrapper: `${prefix}-rootContent`,
+};
+
+export const StyledModalContentComponent = styled('div')(() => ({
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: 20,
+
+    [`& .${modalContentClasses.buttonWrapper}`]: {
+        display: 'flex', 
+        justifyContent: 'flex-end',
+        gap: 10, 
+    },
+}));
