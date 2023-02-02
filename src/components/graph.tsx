@@ -60,18 +60,22 @@ const SchemaTree = (): JSX.Element | null => {
 
     return (
         <div style={{ display: 'flex', flexDirection: "column", gap: 20 }}>
-            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
-                <Button sx={buttonStyle} variant="contained" onClick={sendScriptResult}>Сохранить скрипт</Button>
-                <Button sx={buttonStyle} variant="contained" onClick={click}>Посмотреть дерево в консоли</Button>
-            </div>
-            {getQuestionAnswer({
-                questions,
-                answers,
-                question: rootQuestion,
-                rerenderSchema,
-                isRoot: true,
-                xmlId: xmlId
-            })}
+            {rootQuestion.code && (
+                <>
+                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', gap: 12 }}>
+                        <Button sx={buttonStyle} variant="contained" onClick={sendScriptResult}>Сохранить скрипт</Button>
+                        <Button sx={buttonStyle} variant="contained" onClick={click}>Посмотреть дерево в консоли</Button>
+                    </div>
+                    {getQuestionAnswer({
+                        questions,
+                        answers,
+                        question: rootQuestion,
+                        rerenderSchema,
+                        isRoot: true,
+                        xmlId: xmlId
+                    })}
+                </>
+            )}
             <Loader isShow={isLoading} />
         </div>
     )
