@@ -13,8 +13,9 @@ interface IContextProviderProps {
 
 export const ContextProvider = ({ children }: IContextProviderProps) => {
 
-  const urlGetScript = import.meta.env.VITE_EXPORT_SCRIPT_API_ENDPOINT
-  const urlSendScript = import.meta.env.VITE_IMPORT_SCRIPT_API_ENDPOINT
+  const urlGetScript = (document.getElementById('url_export_id') as HTMLInputElement).value
+  const urlSendScript = (document.getElementById('url_import_id') as HTMLInputElement).value 
+
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
   const xmlId = urlParams.get('script') || '';
